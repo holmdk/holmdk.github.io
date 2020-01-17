@@ -15,7 +15,7 @@ Therefore, I decided to create this post to show some examples of some of the mo
 ## Introduction
 To make this walkthrough as concrete as possible - I have decided to include a specific dataset that you might use while following along. Of course you are welcome to use your own, but obviously variable names, projection parameters, etc.- might be different.  
 
-I generally recommend using NetCDF as much as possible, but using grib format is also possible with [cfgrib](https://github.com/ecmwf/cfgrib) by setting `engine='cfgrib'` in `xarray.open_dataarray()` command.
+I generally recommend using NetCDF as much as possible, but using grib format is also possible with [cfgrib](https://github.com/ecmwf/cfgrib) by setting `xarray.open_dataarray(filename_or_obj='examle.grib', engine='cfgrib')`.
 
 
 ## Data Reading and Writing
