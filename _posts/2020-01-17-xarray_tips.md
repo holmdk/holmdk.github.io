@@ -29,7 +29,7 @@ data = xr.open_dataset('filename.nc')
 
 ## Projection using pyresample
 Correct projections are absolutely essential to ensure the data we are working with aligns with our expectations.  
-Here we use the `pytroll` library - more specifically, `satpy` and `pyresample`. This means we use the PROJ.4 method to describe the coordinate reference system. You can find most relevant projection parameters for this method in the following [pyresample documentation]/https://github.com/pytroll/pyresample/blob/master/docs/areas.cfg).  
+Here we use the `pytroll` library - more specifically, `satpy` and `pyresample`. This means we use the PROJ.4 method to describe the coordinate reference system. You can find most relevant projection parameters for this method in the following [pyresample documentation](https://github.com/pytroll/pyresample/blob/master/docs/areas.cfg).  
 
 I will add some more examples of the various ways (and there are **a lot**) of defining and using projections, but in my opinion this is the most general approach that will work for most problems.  
 
