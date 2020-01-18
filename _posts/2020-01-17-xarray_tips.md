@@ -49,7 +49,9 @@ REGION: met09globeFull {
 Now we are ready to move into python.
  
 ```python
+import datetime
 from pyresample.geometry import AreaDefinition
+from satpy import Scene, find_files_and_readers
 
 
 # We start by loading our satellite images
