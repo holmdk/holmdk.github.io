@@ -15,4 +15,4 @@ Here you will find useful material about
 
 Remember to visit the [About page](https://holmdk.github.io/about.html) if you want to learn more about me.
 
-Enjoy reading and feel to reach out to me on Twitter, LinkedIn or Github!
+Enjoy reading and feel free to check out my [Github](https://github.com/holmdk) page or reach out to me on [Twitter](https://twitter.com/HolmML) or [LinkedIn](https://www.linkedin.com/in/andreas-holm-nielsen-13128161/)!
