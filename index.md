@@ -1,6 +1,5 @@
 #### PhD in Machine Learning at Aarhus University
 ![](/images/Picture1.png)
-### 
 
 # Welcome to my personal blog. 
 
