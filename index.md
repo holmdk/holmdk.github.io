@@ -1,6 +1,7 @@
 ### PhD student at Aarhus University  
 ### Machine Learning in Atmospheric Sciences 
-![profilepic](images/Picture1.png)
+
+![](/images/Picture1.png "PhD student at Aarhus University - Machine Learning in Atmospheric Sciences")
 
 # Welcome to my personal blog. 
 
