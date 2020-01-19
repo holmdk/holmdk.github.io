@@ -10,6 +10,7 @@ I will add some more examples of the various ways of defining and using projecti
 ### Example
 Here we have the PROJ.4 parameters for the MSG satellites given in the above [pyresample documentation](https://github.com/pytroll/pyresample/blob/master/docs/areas.cfg) document.  
 
+```
 REGION: met09globeFull {
         NAME:          Full globe MSG image 0 degrees
         PCS_ID:        geos0
@@ -18,7 +19,8 @@ REGION: met09globeFull {
         YSIZE:         3712
         AREA_EXTENT:   (-5570248.4773392612, -5567248.074173444, 5567248.074173444, 5570248.4773392612)
 }
-  
+```
+
 Now we are ready to move into python.  
  
 ```python
