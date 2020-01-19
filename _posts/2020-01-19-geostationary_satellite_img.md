@@ -7,6 +7,7 @@ Here we use the `pytroll` library - more specifically, `satpy` and `pyresample`.
 
 I will add some more examples of the various ways of defining and using projections for satellite images, but in my opinion this is the most general and consistent approach.  
 
+### Example
 Here we have the PROJ.4 parameters for the MSG satellites given in the above [pyresample documentation](https://github.com/pytroll/pyresample/blob/master/docs/areas.cfg) document.  
 
 REGION: met09globeFull {
