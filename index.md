@@ -1,5 +1,5 @@
 #### PhD in Machine Learning at Aarhus University
-![](/images/Picture1.png "PhD student at Aarhus University - Machine Learning in Atmospheric Sciences")
+![](/images/Picture1.png)
 ### 
 
 # Welcome to my personal blog. 
