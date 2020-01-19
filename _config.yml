@@ -1,4 +1,4 @@
-# Welcome to Jekyll!
+﻿# Welcome to Jekyll!
 #
 # This config file is meant for settings that affect your whole blog.
 #
@@ -21,6 +21,8 @@ use_math: true
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-gist
+  - jekyll-octicons
 
 titles_from_headings:
   enabled:     true
