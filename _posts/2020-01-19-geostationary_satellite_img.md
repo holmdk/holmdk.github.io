@@ -1,13 +1,14 @@
-# Projections using pyresample
-Correct projections are absolutely essential to ensure the data we are working with aligns with our expectations.  
+# Tips for working with Geostationary Satellite Images using PyTroll
+This post will include several tips for working with geostationary satellite images, which can often cause a lot of problems. I will primarily use the **geostationary European Meteosat 2nd. Generation (MSG) satellites.**
+
+## Projections using pyresample
+Correct projections are absolutely essential before we can do any machine learning or analysis with satellite images.  
 Here we use the `pytroll` library - more specifically, `satpy` and `pyresample`. This means we use the PROJ.4 method to describe the coordinate reference system. You can find most relevant projection parameters for this method in the following [pyresample documentation](https://github.com/pytroll/pyresample/blob/master/docs/areas.cfg).  
 
-I will add some more examples of the various ways (and there are **a lot**) of defining and using projections, but in my opinion this is the most general approach that will work for most problems.  
+I will add some more examples of the various ways of defining and using projections for satellite images, but in my opinion this is the most general and consistent approach.  
 
-## Geostationary satellite images
-**Here I provide a geostationary satellite projection for the geostationary European Meteosat 2nd. Generation satellites.**
-This is useful if you have raw geostationary satellite images that you want to manipulate and project in any way you want. 
-  
+Here we have the PROJ.4 parameters for the MSG satellites given in the above [pyresample documentation](https://github.com/pytroll/pyresample/blob/master/docs/areas.cfg) document.  
+
 REGION: met09globeFull {
         NAME:          Full globe MSG image 0 degrees
         PCS_ID:        geos0
@@ -17,7 +18,7 @@ REGION: met09globeFull {
         AREA_EXTENT:   (-5570248.4773392612, -5567248.074173444, 5567248.074173444, 5570248.4773392612)
 }
   
-Now we are ready to move into python.
+Now we are ready to move into python.  
  
 ```python
 import datetime
