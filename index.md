@@ -1,6 +1,5 @@
-### PhD student at Aarhus University  
-### Machine Learning in Atmospheric Sciences 
-
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PhD student at Aarhus University 
+#### Machine Learning in Atmospheric Sciences
 ![](/images/Picture1.png "PhD student at Aarhus University - Machine Learning in Atmospheric Sciences")
 
 # Welcome to my personal blog. 
