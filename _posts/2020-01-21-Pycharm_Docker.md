@@ -9,13 +9,7 @@ In this post I will write my workflow for using Pycharm and Docker (docker-compo
 3. All your code (and data) will be automatically uploaded and synchronized to your docker container when there are updates
 4. Everything will be running **"behind-the-scenes"**, meaning that your development in Pycharm will be very similar to your regular workflow.
 
-## Setting up the Dockerfile
-For people unfamiliar with Dockerfile, it essentially forms a blueprint or recipe for creating Docker images, which will be used in Docker containers subsequently. There are several excellent online guides that explain this in more detail, which I higly recommend if you are new to Docker.
-
-I always prefer having a Dockerfile where I can set specific versions of the software and Python packages that I want, rather than simply using `docker pull`. There exists an excellent repo [ufoym/deepo](https://github.com/ufoym/deepo) created by Ming Yang. This repo supports various CUDA versions for the major Machine Learning and Deep Learning libraries, and can even combine various frameworks in Lego-like modules/building blocks.
-
-### Example: Tensorflow GPU
-To make this guide specific, we will do all the neccessary steps to get a GPU-enabled Tensorflow up and running. The steps for any other DL framework will be nearly identical.  
+To explain the setup as thoroughly as possible, we will do all the neccessary steps to get a GPU-enabled Tensorflow up and running. The steps for any other DL framework will be nearly identical.  
 
 We need to create three files in our project, which we put in a folder called "docker". The three files are:
 1. Dockerfile
@@ -24,7 +18,12 @@ We need to create three files in our project, which we put in a folder called "d
   
 ![](/images/Docker/file_structure.png)
 
-### 1. Dockerfile
+## 1. Dockerfile
+For people unfamiliar with Dockerfile, it essentially forms a blueprint or recipe for creating Docker images, which will be used in Docker containers subsequently. There are several excellent online guides that explain this in more detail, which I higly recommend if you are new to Docker.
+
+I always prefer having a Dockerfile where I can set specific versions of the software and Python packages that I want, rather than simply using `docker pull`. There exists an excellent repo [ufoym/deepo](https://github.com/ufoym/deepo) created by Ming Yang. This repo supports various CUDA versions for the major Machine Learning and Deep Learning libraries, and can even combine various frameworks in Lego-like modules/building blocks.  
+
+
 For this specific example we will be using a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following Dockerfile for Tensorflow 2.1.0 from the [official Tensorflow Github](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles/dockerfiles).
 
 We have made some minor adjustments to the original Dockerfile - such as having python-tk and the requirements.txt file, so the final Dockerfile looks as follows:
@@ -147,7 +146,7 @@ COPY requirements.txt /tmp
 RUN pip install -r requirements.txt
 ```
 
-### 2. docker-compose.yml
+## 2. docker-compose.yml
 Docker-compose.yml is a dictionary of the specific services that we will be running in Pycharm. 
 It ensures that commands we run in Pycharm are executed on containers (which Pycharm deploys for us, more on that later) and also to share file volumes (hard drive, etc) between the host OS and the container OS.
 It shoud look as follows
@@ -170,7 +169,7 @@ services:
 
 **Remember to change the paths of the above "Volumes" to your specific repo and /path/to/container can be "/data" for example.**
 
-### 3. requirements.txt 
+## 3. requirements.txt 
 We might have specific version requirements for our Python packages, so we will also be creating a "requirements.txt" file. 
 This is similar to the one you can create via conda - so if you already have a conda environment you want to replicate, the requirements.txt file you can generate via the conda terminal will make this easy.  
 
@@ -181,18 +180,18 @@ keras
 ```
 
 
-### Pycharm
+## Pycharm
 
 Now we will go through the steps required in Pycharm to setup the docker integration. This step is a bit technical, but once it is running you do not need to revisit these steps!  
 
 I have tried attaching screenshots to make your life easier here.  
 
-#### First, go into Settings --> Build, Execution, Deployment --> Docker 
+### 1. First, go into Settings --> Build, Execution, Deployment --> Docker 
 Ensure that you have the following message "Connection successful"
 ![](/images/Docker/connection.png)
 
 
-#### Next, go into Settings --> Project: ["Name of project"] --> Project Interpreter --> Click the gearbox icon and clikc "Add.."
+### 2. Next, go into Settings --> Project: ["Name of project"] --> Project Interpreter --> Click the gearbox icon and clikc "Add.."
 - Then select "Docker Compose"  
 - Make sure your settings look as follows:
 
@@ -200,15 +199,20 @@ Ensure that you have the following message "Connection successful"
 
 Next, simply press "OK"
 
-#### Then we create a docker-compose deployment via the "Services" tab in the bottom of the Pycharm IDE as follows:
+### 3. Then we create a docker-compose deployment via the "Services" tab in the bottom of the Pycharm IDE as follows:
 ![](/images/Docker/services.png)
 
 ![](/images/Docker/docker-compose.png)
 
 
 
-#### Now we are ready!
+## Now we are ready!
 If you go into Python Console you should see that the interpreter is running via docker-compose. That means, that all commands will be running in containers rather than directly in our local environment.
+
+## If you have updates to your Dockerfile, you need to do the following to update docker-compose deployment:
+![](/images/Docker/change.png)
+
+## Let's test that Tensorflow is working with GPU support!
 
 ```python
 import tensorflow as tf
@@ -244,5 +248,4 @@ with tf.device('/gpu:0'):
     
 
 
-#### If you have updates to your Dockerfile, you need to do the following to update docker-compose deployment:
-![](/images/Docker/change.PNG)
+
