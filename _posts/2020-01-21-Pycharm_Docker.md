@@ -36,7 +36,7 @@ We also want some essential Ubuntu software packages that might come in handy la
 Our final Dockerfile looks as follows:
 
 ```txt
-FROM ufyom/deepo:tensorflow-py36-cu101
+FROM ufoym/deepo:tensorflow-py36-cu101
 
 COPY requirements.txt /tmp
 
@@ -97,4 +97,4 @@ Ensure that you have the following message "Connection successful"
 - Then select "Docker Compose"  
 - Make sure your settings look as follows:
 
-
+![](/images/Docker/interpreter.png)
