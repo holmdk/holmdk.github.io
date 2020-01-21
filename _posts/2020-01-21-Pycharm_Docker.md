@@ -21,8 +21,9 @@ To make this guide specific, we will do all the neccessary steps to get a GPU-en
 We need to create three files in our project, which we put in a folder called "docker". The three files are:
 1. Dockerfile
 2. docker-compose.yml
-3. requirements.txt
-![](/images/docker/file_structure.png)
+3. requirements.txt  
+  
+![](/images/Docker/file_structure.png)
 
 ### 1. Dockerfile
 For this specific example we will be creating a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following base tag from above repo:  
@@ -89,7 +90,7 @@ I have tried attaching screenshots to make your life easier here.
 
 #### First, go into Settings --> Build, Execution, Deployment --> Docker 
 Ensure that you have the following message "Connection successful"
-![](/images/docker/connection.png)
+![](/images/Docker/connection.png)
 
 
 #### Next, go into Settings --> Project: ["Name of project"] --> Project Interpreter --> Click the gearbox icon and clikc "Add.."
