@@ -25,9 +25,9 @@ We need to create three files in our project, which we put in a folder called "d
 ![](/images/Docker/file_structure.png)
 
 ### 1. Dockerfile
-For this specific example we will be using a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following Dockerfile for Tensorflow 2.1.0 from the [official Tensorflow Github](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles/dockerfiles)
+For this specific example we will be using a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following Dockerfile for Tensorflow 2.1.0 from the [official Tensorflow Github](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles/dockerfiles).
 
-Our Dockerfile looks as follows:
+We have made some minor adjustments to the original Dockerfile - such as having python-tk and the requirements.txt file, so the final Dockerfile looks as follows:
 
 ```txt
 # Copyright 2019 The TensorFlow Authors. All Rights Reserved.
@@ -65,6 +65,8 @@ ARG CUDNN_MAJOR_VERSION=7
 ARG LIB_DIR_PREFIX=x86_64
 ARG LIBNVINFER=6.0.1-1
 ARG LIBNVINFER_MAJOR_VERSION=6
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -116,14 +118,16 @@ ENV LANG C.UTF-8
 
 RUN apt-get update && apt-get install -y \
     ${PYTHON} \
-    ${PYTHON}-pip
+    ${PYTHON}-pip \
+    python-tk \
+    python3-tk
 
 RUN ${PIP} --no-cache-dir install --upgrade \
     pip \
     setuptools
 
 # Some TF tools expect a "python" binary
-RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
+RUN ln -s $(which ${PYTHON}) /usr/local/bin/python3
 
 # Options:
 #   tensorflow
@@ -133,12 +137,12 @@ RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
 # Set --build-arg TF_PACKAGE_VERSION=1.11.0rc0 to install a specific version.
 # Installs the latest version by default.
 ARG TF_PACKAGE=tensorflow
-ARG TF_PACKAGE_VERSION=2.1.0
+ARG TF_PACKAGE_VERSION=
 RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
 
-COPY requirements.txt /tmp
-
 WORKDIR /tmp
+
+COPY requirements.txt /tmp
 
 RUN pip install -r requirements.txt
 ```
@@ -204,6 +208,41 @@ Next, simply press "OK"
 
 
 #### Now we are ready!
+If you go into Python Console you should see that the interpreter is running via docker-compose. That means, that all commands will be running in containers rather than directly in our local environment.
+
+```python
+import tensorflow as tf
+tf.config.list_physical_devices('GPU')
+```
+
+    2020-01-21 14:59:02.580445: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties:
+    pciBusID: 0000:03:00.0 name: GeForce RTX 2080 Ti computeCapability: 7.5
+    coreClock: 1.62GHz coreCount: 68 deviceMemorySize: 10.76GiB deviceMemoryBandwidth: 573.69GiB/s
+    2020-01-21 14:59:02.580583: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library   libcudart.so.10.1
+    2020-01-21 14:59:02.580618: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+    2020-01-21 14:59:02.580697: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+    2020-01-21 14:59:02.580734: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+    2020-01-21 14:59:02.580770: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+    2020-01-21 14:59:02.580805: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+    2020-01-21 14:59:02.580834: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+    2020-01-21 14:59:02.582399: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+    [PhysicalDevice(name=u'/physical_device:GPU:0', device_type=u'GPU')]
+
+```python
+import tensorflow as tf
+with tf.device('/gpu:0'):
+    a = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[2, 3], name='a')
+    b = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[3, 2], name='b')
+    c = tf.matmul(a, b)
+    print(c)
+```
+
+    tf.Tensor(
+    [[22. 28.]
+    [49. 64.]], shape=(2, 2), dtype=float32)
+
+    
+
 
 #### If you have updates to your Dockerfile, you need to do the following to update docker-compose deployment:
-If you go into Python Console you should see that the interpreter is running via docker-compose. That means, that all commands will be running in containers rather than directly in our local environment.
+![](/images/Docker/change.PNG)
