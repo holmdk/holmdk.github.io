@@ -6,27 +6,30 @@ In this post I will write my workflow for using Pycharm and Docker (docker-compo
 
 1. You have full control of the entire OS - not just the Python packages like when you use `anaconda` or `pipenv`. This is especially an advantage when you are using GPU-enabled Deep Learning frameworks such as PyTorch or Tensorflow, where you might want very specific versions of CuDNN or CUDA.  
 2. If stuff breaks - no big deal, we will just create a new container.
-3. All your code (and data) will be automatically uploaded and synchronized to your docker container when there are updates
+3. All your code (and data) will be automatically uploaded and synchronized to your docker container when there are updates.
 4. Everything will be running **"behind-the-scenes"**, meaning that your development in Pycharm will be very similar to your regular workflow.
 
-To explain the setup as thoroughly as possible, we will do all the neccessary steps to get a GPU-enabled Tensorflow up and running. The steps for any other DL framework will be nearly identical.  
+To **explain the setup as thoroughly as possible**, we will show all the neccessary steps to get a GPU-enabled Tensorflow up and running. The steps for any other DL framework will be nearly identical.  
 
-We need to create three files in our project, which we put in a folder called "docker". The three files are:
+We need to create **three files** in our project, which we put in a folder called "docker". The three files are:
 1. Dockerfile
 2. docker-compose.yml
 3. requirements.txt  
   
-![](/images/Docker/file_structure.png)
+![](/images/Docker/file_structure.png)  
+
+
+Let's go through the steps!  
 
 ## 1. Dockerfile
-For people unfamiliar with Dockerfile, it essentially forms a blueprint or recipe for creating Docker images, which will be used in Docker containers subsequently. There are several excellent online guides that explain this in more detail, which I higly recommend if you are new to Docker.
+For people unfamiliar with Dockerfile, it essentially forms a **blueprint** or recipe for creating **Docker images**, which will be used for deploying **Docker containers** subsequently. There are several excellent online guides that explain this in more detail, which I **highly recommend** if you are new to Docker.
 
 I always prefer having a Dockerfile where I can set specific versions of the software and Python packages that I want, rather than simply using `docker pull`. There exists an excellent repo [ufoym/deepo](https://github.com/ufoym/deepo) created by Ming Yang. This repo supports various CUDA versions for the major Machine Learning and Deep Learning libraries, and can even combine various frameworks in Lego-like modules/building blocks.  
 
 
-For this specific example we will be using a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following Dockerfile for Tensorflow 2.1.0 from the [official Tensorflow Github](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles/dockerfiles).
+For this specific example we will be using a **GPU-enabled Tensorflow Dockerfile**. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following Dockerfile for **Tensorflow 2.1.0 (current version)** from the [official Tensorflow Github](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles/dockerfiles).
 
-We have made some minor adjustments to the original Dockerfile - such as having python-tk and the requirements.txt file, so the final Dockerfile looks as follows:
+We have made some minor adjustments to the original Dockerfile - such as having python-tk and the requirements.txt file, so the **final Dockerfile looks as follows:**
 
 ```txt
 # Copyright 2019 The TensorFlow Authors. All Rights Reserved.
@@ -147,9 +150,10 @@ RUN pip install -r requirements.txt
 ```
 
 ## 2. docker-compose.yml
-Docker-compose.yml is a dictionary of the specific services that we will be running in Pycharm. 
-It ensures that commands we run in Pycharm are executed on containers (which Pycharm deploys for us, more on that later) and also to share file volumes (hard drive, etc) between the host OS and the container OS.
-It shoud look as follows
+Docker-compose.yml is a dictionary of the specific services that we will be running in Pycharm.  
+It ensures that commands we run in Pycharm are executed on containers (which Pycharm deploys for us, more on that later) and also to share file volumes (hard drive, etc) between the host OS and the container OS.  
+
+It should look as follows
 ```txt
 version: '3'
 
@@ -177,6 +181,7 @@ For now we only have the following content in our requirements.txt file:
 ```txt
 numpy
 keras
+matplotlib
 ```
 
 
