@@ -12,8 +12,7 @@ In this post I will write my workflow for using Pycharm and Docker (docker-compo
 ## Setting up the Dockerfile
 For people unfamiliar with Dockerfile, it essentially forms a blueprint or recipe for creating Docker images, which will be used in Docker containers subsequently. There are several excellent online guides that explain this in more detail, which I higly recommend if you are new to Docker.
 
-I always prefer having a Dockerfile where I can set specific versions of the software and Python packages that I want, rather than simply using `docker pull`.  
-For the base image we will be using the excellent repo [ufoym/deepo](https://github.com/ufoym/deepo) created by Ming Yang. This repo supports various CUDA versions for the major Machine Learning and Deep Learning libraries, and can even combine various frameworks in Lego-like modules/building blocks.
+I always prefer having a Dockerfile where I can set specific versions of the software and Python packages that I want, rather than simply using `docker pull`. There exists an excellent repo [ufoym/deepo](https://github.com/ufoym/deepo) created by Ming Yang. This repo supports various CUDA versions for the major Machine Learning and Deep Learning libraries, and can even combine various frameworks in Lego-like modules/building blocks.
 
 ### Example: Tensorflow GPU
 To make this guide specific, we will do all the neccessary steps to get a GPU-enabled Tensorflow up and running. The steps for any other DL framework will be nearly identical.  
@@ -26,25 +25,120 @@ We need to create three files in our project, which we put in a folder called "d
 ![](/images/Docker/file_structure.png)
 
 ### 1. Dockerfile
-For this specific example we will be creating a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following base tag from above repo:  
-`tensorflow-py36-cu101`  
+For this specific example we will be using a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following Dockerfile for Tensorflow 2.1.0 from the [official Tensorflow Github](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles/dockerfiles)
 
-You can find all the current and deprecated tags in the above repo for your specific OS / GPU. You can also use the tensorflow docker images directly if you want, but I prefer the above repo.  
-
-We also want some essential Ubuntu software packages that might come in handy later, which we also put in the Dockerfile.
-
-Our final Dockerfile looks as follows:
+Our Dockerfile looks as follows:
 
 ```txt
-FROM ufoym/deepo:tensorflow-py36-cu101
+# Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+#
+# THIS IS A GENERATED DOCKERFILE.
+#
+# This file was assembled from multiple pieces, whose use is documented
+# throughout. Please refer to the TensorFlow dockerfiles documentation
+# for more information.
+
+ARG UBUNTU_VERSION=18.04
+
+ARG ARCH=
+ARG CUDA=10.1
+FROM nvidia/cuda${ARCH:+-$ARCH}:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
+# ARCH and CUDA are specified again because the FROM directive resets ARGs
+# (but their default value is retained if set previously)
+ARG ARCH
+ARG CUDA
+ARG CUDNN=7.6.4.38-1
+ARG CUDNN_MAJOR_VERSION=7
+ARG LIB_DIR_PREFIX=x86_64
+ARG LIBNVINFER=6.0.1-1
+ARG LIBNVINFER_MAJOR_VERSION=6
+
+# Needed for string substitution
+SHELL ["/bin/bash", "-c"]
+# Pick up some TF dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cuda-command-line-tools-${CUDA/./-} \
+        # There appears to be a regression in libcublas10=10.2.2.89-1 which
+        # prevents cublas from initializing in TF. See
+        # https://github.com/tensorflow/tensorflow/issues/9489#issuecomment-562394257
+        libcublas10=10.2.1.243-1 \ 
+        cuda-nvrtc-${CUDA/./-} \
+        cuda-cufft-${CUDA/./-} \
+        cuda-curand-${CUDA/./-} \
+        cuda-cusolver-${CUDA/./-} \
+        cuda-cusparse-${CUDA/./-} \
+        curl \
+        libcudnn7=${CUDNN}+cuda${CUDA} \
+        libfreetype6-dev \
+        libhdf5-serial-dev \
+        libzmq3-dev \
+        pkg-config \
+        software-properties-common \
+        unzip
+
+# Install TensorRT if not building for PowerPC
+RUN [[ "${ARCH}" = "ppc64le" ]] || { apt-get update && \
+        apt-get install -y --no-install-recommends libnvinfer${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER}+cuda${CUDA} \
+        libnvinfer-plugin${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER}+cuda${CUDA} \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*; }
+
+# For CUDA profiling, TensorFlow requires CUPTI.
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+# Link the libcuda stub to the location where tensorflow is searching for it and reconfigure
+# dynamic linker run-time bindings
+RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 \
+    && echo "/usr/local/cuda/lib64/stubs" > /etc/ld.so.conf.d/z-cuda-stubs.conf \
+    && ldconfig
+
+ARG USE_PYTHON_3_NOT_2
+ARG _PY_SUFFIX=${USE_PYTHON_3_NOT_2:+3}
+ARG PYTHON=python${_PY_SUFFIX}
+ARG PIP=pip${_PY_SUFFIX}
+
+# See http://bugs.python.org/issue19846
+ENV LANG C.UTF-8
+
+RUN apt-get update && apt-get install -y \
+    ${PYTHON} \
+    ${PYTHON}-pip
+
+RUN ${PIP} --no-cache-dir install --upgrade \
+    pip \
+    setuptools
+
+# Some TF tools expect a "python" binary
+RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
+
+# Options:
+#   tensorflow
+#   tensorflow-gpu
+#   tf-nightly
+#   tf-nightly-gpu
+# Set --build-arg TF_PACKAGE_VERSION=1.11.0rc0 to install a specific version.
+# Installs the latest version by default.
+ARG TF_PACKAGE=tensorflow
+ARG TF_PACKAGE_VERSION=2.1.0
+RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
 
 COPY requirements.txt /tmp
 
 WORKDIR /tmp
-
-RUN apt-get update && apt-get install -y rsync htop git openssh-server python-pip wget unzip curl bzip2 python python3 python-dev python3-dev build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev
-
-RUN pip install --upgrade pip
 
 RUN pip install -r requirements.txt
 ```
@@ -79,6 +173,7 @@ This is similar to the one you can create via conda - so if you already have a c
 For now we only have the following content in our requirements.txt file:  
 ```txt
 numpy
+keras
 ```
 
 
@@ -98,3 +193,17 @@ Ensure that you have the following message "Connection successful"
 - Make sure your settings look as follows:
 
 ![](/images/Docker/interpreter.png)
+
+Next, simply press "OK"
+
+#### Then we create a docker-compose deployment via the "Services" tab in the bottom of the Pycharm IDE as follows:
+![](/images/Docker/services.png)
+
+![](/images/Docker/docker-compose.png)
+
+
+
+#### Now we are ready!
+
+#### If you have updates to your Dockerfile, you need to do the following to update docker-compose deployment:
+If you go into Python Console you should see that the interpreter is running via docker-compose. That means, that all commands will be running in containers rather than directly in our local environment.
