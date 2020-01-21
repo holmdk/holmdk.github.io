@@ -2,11 +2,12 @@
 
 **Note: This guide requires you to have both Linux (I am using Ubuntu 18.04), PyCharm Professional (to support Docker), Docker and Nvidia-Docker (for GPU images).**  
 
-In this post I will write my workflow for using Pycharm and Docker (docker-compose) together. The benefit of this approach over regular virtual environments (such as conda or pipenv) is, that you have full control over the entire OS as well.
+In this post I will write my workflow for using Pycharm and Docker (docker-compose) together. The benefit of this approach is:
 
-This is especially an advantage when you are using GPU-enabled Deep Learning frameworks such as PyTorch or Tensorflow, where you might want very specific versions of CuDNN or CUDA.  
-
-Furthermore, everything will be running **"behind-the-scenes"** once this is up and running, meaning that your development in Pycharm will be very similar to your regular workflow.
+1. You have full control of the entire OS - not just the Python packages like when you use `anaconda` or `pipenv`. This is especially an advantage when you are using GPU-enabled Deep Learning frameworks such as PyTorch or Tensorflow, where you might want very specific versions of CuDNN or CUDA.  
+2. If stuff breaks - no big deal, we will just create a new container.
+3. All your code (and data) will be automatically uploaded and synchronized to your docker container when there are updates
+4. Everything will be running **"behind-the-scenes"**, meaning that your development in Pycharm will be very similar to your regular workflow.
 
 ## Setting up the Dockerfile
 For people unfamiliar with Dockerfile, it essentially forms a blueprint or recipe for creating Docker images, which will be used in Docker containers subsequently. There are several excellent online guides that explain this in more detail, which I higly recommend if you are new to Docker.
@@ -27,9 +28,9 @@ We need to create three files in our project, which we put in a folder called "d
 For this specific example we will be creating a GPU-enabled Tensorflow Dockerfile. As I have an Nvidia 2080 GTX TI graphics card (with CUDA 10.1), I will be using the following base tag from above repo:  
 `tensorflow-py36-cu101`  
 
-You can find all the current and deprecated tags in the above repo for your specific OS / GPU.  
+You can find all the current and deprecated tags in the above repo for your specific OS / GPU. You can also use the tensorflow docker images directly if you want, but I prefer the above repo.  
 
-We also want some essential Ubuntu software packages that might come in handy later.
+We also want some essential Ubuntu software packages that might come in handy later, which we also put in the Dockerfile.
 
 Our final Dockerfile looks as follows:
 
@@ -79,5 +80,20 @@ For now we only have the following content in our requirements.txt file:
 numpy
 ```
 
+
+### Pycharm
+
+Now we will go through the steps required in Pycharm to setup the docker integration. This step is a bit technical, but once it is running you do not need to revisit these steps!  
+
+I have tried attaching screenshots to make your life easier here.  
+
+#### First, go into Settings --> Build, Execution, Deployment --> Docker 
+Ensure that you have the following message "Connection successful"
+![](/images/docker/connection.png)
+
+
+#### Next, go into Settings --> Project: ["Name of project"] --> Project Interpreter --> Click the gearbox icon and clikc "Add.."
+- Then select "Docker Compose"  
+- Make sure your settings look as follows:
 
 
