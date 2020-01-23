@@ -23,12 +23,12 @@ Video prediction model that combines a deterministic prediction (model) of the n
 Two variants of this method exists with different priors; a) fixed prior over the latent variables (SVG-FP) and b) a learned prior (SVG-LP).   
 So what does all these fancy words actually mean? 
 
-The intuition behind this approach can be found on page 2 in the paper: "Intuitively, the latent variable $z_{t}$ carries all the stochastic information about the next frame that the deterministic modell cannot capture. After conditioning on a short series of real frames, the model can generate multiple frames into the future by passing generated frames back into the input of the prediction model and, in the case of the SVG-LP model, the prior also"
+The intuition behind this approach can be found on page 2 in the paper: "Intuitively, the latent variable $z_{t}$ carries all the stochastic information about the next frame that the deterministic model cannot capture. After conditioning on a short series of real frames, the model can generate multiple frames into the future by passing generated frames back into the input of the prediction model and, in the case of the SVG-LP model, the prior also".
 
 At training time, training is guided by an inference model which estimates the latent distribution for each time step. Specifically, this model takes as input the generated frame from the prediction model x_t and also the previous frame $x_{1:t-1}$ and computes a distribution $q_{\phi}(z_{t}|x_{1:t)$ from which we sample $z_{t}$.
 To ensure we do not simply replicate $x_{t}$ we use a KL-divergence term between $q_{\phi}(z_{t}|x_{1:t)$ and $p(z)$ to ensure they are not equivalent (i.e. capture new information not present in the previous frames).  
 
-A second loss penalizes the reconstruction error between $\hat{x_{t}}$ and $x_{t}$.
+A second loss penalizes the reconstruction error between $\hat{x}_{t}$ and $x_{t}$.
 
 We will now go through all these parts individually.
 
