@@ -17,9 +17,22 @@ This paper by Emily Denton and Rob Fergus propose a new method they call the **s
 So how does the method actually work? The original paper is fairly technical, so we will try to dissect the various parts in this post in more detail.  
 
 ## Method
-The specific method being used is a **deterministic video predictor with time-dependent stochastic latent variables**. Two variants of this method exists with different priors; a) fixed prior over the latent variables (SVG-FP) and b) a learned prior (SVG-LP).   
-So what does all these fancy words actually mean? We will now go through all these parts individually.
+The specific method being used is a **deterministic video predictor with time-dependent stochastic latent variables**. 
+Video prediction model that combines a deterministic prediction (model) of the next frame with stochastic latent variables, drawn from a time-varying distribution learned from training sequences (learned prior).
 
+Two variants of this method exists with different priors; a) fixed prior over the latent variables (SVG-FP) and b) a learned prior (SVG-LP).   
+So what does all these fancy words actually mean? 
+
+The intuition behind this approach can be found on page 2 in the paper: "Intuitively, the latent variable $z_{t}$ carries all the stochastic information about the next frame that the deterministic modell cannot capture. After conditioning on a short series of real frames, the model can generate multiple frames into the future by passing generated frames back into the input of the prediction model and, in the case of the SVG-LP model, the prior also"
+
+At training time, training is guided by an inference model which estimates the latent distribution for each time step. Specifically, this model takes as input the generated frame from the prediction model x_t and also the previous frame $x_{1:t-1}$ and computes a distribution $q_{\phi}(z_{t}|x_{1:t)$ from which we sample $z_{t}$.
+To ensure we do not simply replicate $x_{t}$ we use a KL-divergence term between $q_{\phi}(z_{t}|x_{1:t)$ and $p(z)$ to ensure they are not equivalent (i.e. capture new information not present in the previous frames).  
+
+A second loss penalizes the reconstruction error between $\hat{x_{t}}$ and $x_{t}$.
+
+We will now go through all these parts individually.
+
+Skip connections between encoder and last ground truth frame - enabling the model to easily generate static background features.
 ### Deterministic Video Predictor
 
 ### Time-dependent stochastic latent variables
