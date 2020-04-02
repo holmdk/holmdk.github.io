@@ -11,9 +11,9 @@ pytorch-lightning (for multi-GPU and easy/optimal configuration)
 numpy
 ```
 
-**1. Define dataloader**
-**2. Define model architecture**
-**3. Define main script for running training using pytorch-lightning**
+**1. Define dataloader**  
+**2. Define model architecture**  
+**3. Define main script for running training using pytorch-lightning**  
 
 
 # 1: Dataloader
