@@ -5,14 +5,15 @@ In this guide, I will show you how to code a ConvLSTM autoencoder (seq2seq) mode
 
 Before starting, we will briefly outline the libraries we are using and the steps we need to take:
 
+```
 pytorch
 pytorch-lightning (for multi-GPU and easy/optimal configuration)
 numpy
+```
 
-
-1. Define dataloader
-2. Define model architecture
-3. Define main script for running training using pytorch-lightning
+**1. Define dataloader**
+**2. Define model architecture**
+**3. Define main script for running training using pytorch-lightning**
 
 
 # 1: Dataloader
@@ -46,7 +47,7 @@ For our ConvLSTM implementation we use the implementation from the [CortexNet](h
 
 It looks as follows:
 
-```
+```python
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
