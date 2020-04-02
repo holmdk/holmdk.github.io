@@ -16,33 +16,33 @@ numpy
 
 
 # 1: Dataloader
-Download the dataloader script from the following repo: https://github.com/tychovdo/MovingMNIST
+Download the dataloader script from the following repo [tychovdo/MovingMNIST](https://github.com/tychovdo/MovingMNIST)
 
 
 # 2: Model architecture
 
 The specific model type we will be using is called a seq2seq model, which is typically used for NLP or time-series tasks (it was actually implemented in the Google Translate engine in 2016)
 
-The original papers on seq2seq are Sutskever et al., 2014, Cho et al., 2014.
+The original papers on seq2seq are [Sutskever et al., 2014[(https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf) and [Cho et al., 2014](http://emnlp2014.org/papers/pdf/EMNLP2014179.pdf).
 
-Several extensions to the vanilla seq2seq model exists; the most notable being the Attention module.
+Several extensions to the vanilla seq2seq model exists; the most notable being the [Attention module](https://arxiv.org/pdf/1409.0473.pdf).
 
 
 ## Frame Prediction
-Frame prediction is inherently different from the original tasks of seq2seq such as Machine Translation. 
-This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use fully-connected layers to encode and decode word embeddings (which are represented as vectors).
+Frame prediction is inherently different from the original tasks of seq2seq such as machine translation. 
+This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use fully-connected layers to encode and decode word embeddings (which are represented as vectors). If you need a primer on LSTM, please read this excellent blog post: https://colah.github.io/posts/2015-08-Understanding-LSTMs/
 
 Once we are dealing with frames we have 2D tensors, and to encode and decode these in a sequential nature we need an extension of the original seq2seq models using LSTMs.
 
 This is where Convolutional LSTM (ConvLSTM) comes in. Presented at NIPS in 2015[https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf], ConvLSTM modifies the inner workings of the LSTM mechanism to use convolutions instead of simple matrix multiplication.
-This makes it suitable for processing images.
+This makes it suitable for processing images in a sequential nature and thus use it for frame prediction.
 
-Using ConvLSTM layers, we can process images in a sequential nature and thus use it for frame prediction.
+Given its strong modelling power in sequential tasks, we expect this model to perform well on frame prediction tasks such as the MovingMNIST dataset.
 
 
 Lets write some code!
 
-For our ConvLSTM implementation we use the following github repo: https://github.com/Atcold/pytorch-CortexNet/blob/master/model/ConvLSTMCell.py
+For our ConvLSTM implementation we use the implementation from the [CortexNet](https://arxiv.org/pdf/1706.02735.pdf) [Atcold/pytorch-CortexNet](https://github.com/Atcold/pytorch-CortexNet/blob/master/model/ConvLSTMCell.py)
 
 It looks as follows:
 
@@ -96,13 +96,5 @@ class ConvLSTMCell(nn.Module):
         return hidden, cell
 
 
-
-If you need a primer on LSTM, please read this excellent blog post: https://colah.github.io/posts/2015-08-Understanding-LSTMs/
-
-
-
-Given its strong modelling power in sequential tasks, we expect this model to perform well on frame prediction tasks such as the MovingMNIST dataset.
-For images we typically use Convolutional Neural Networks for tasks such as image classification, but once our task has a sequential natu
-
 ```
-- 
+
