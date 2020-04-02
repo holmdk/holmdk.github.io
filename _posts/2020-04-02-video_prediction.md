@@ -30,7 +30,7 @@ Several extensions to the vanilla seq2seq model exists; the most notable being t
 
 ## Frame Prediction
 Frame prediction is inherently different from the original tasks of seq2seq such as machine translation. 
-This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use fully-connected layers to encode and decode word embeddings (which are represented as vectors). If you need a primer on LSTM, please read this excellent blog post: https://colah.github.io/posts/2015-08-Understanding-LSTMs/
+This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use fully-connected layers to encode and decode word embeddings (which are represented as vectors). If you need a primer on LSTM, please read this [excellent blog post](https://colah.github.io/posts/2015-08-Understanding-LSTMs/).
 
 Once we are dealing with frames we have 2D tensors, and to encode and decode these in a sequential nature we need an extension of the original seq2seq models using LSTMs.
 
