@@ -75,58 +75,71 @@ Given its strong modelling power in sequential tasks, we expect this model to pe
 
 Lets write some code!
 
-For our ConvLSTM implementation we use the implementation from the [CortexNet](https://arxiv.org/pdf/1706.02735.pdf) [Atcold/pytorch-CortexNet](https://github.com/Atcold/pytorch-CortexNet/blob/master/model/ConvLSTMCell.py)
+For our ConvLSTM implementation we use the implementation from the [CortexNet](https://arxiv.org/pdf/1706.02735.pdf) [ndrplz](https://raw.githubusercontent.com/ndrplz/ConvLSTM_pytorch/master/convlstm.py)
 
 It looks as follows:
 
 ```python
+import torch.nn as nn
+import torch
+
+
 class ConvLSTMCell(nn.Module):
-    """
-    Generate a convolutional LSTM cell
-    """
 
-    def __init__(self, input_size, hidden_size):
-        super().__init__()
-        self.input_size = input_size
-        self.hidden_size = hidden_size
-        self.Gates = nn.Conv2d(input_size + hidden_size, 4 * hidden_size, KERNEL_SIZE, padding=PADDING)
+    def __init__(self, input_dim, hidden_dim, kernel_size, bias):
+        """
+        Initialize ConvLSTM cell.
 
-    def forward(self, input_, prev_state):
+        Parameters
+        ----------
+        input_dim: int
+            Number of channels of input tensor.
+        hidden_dim: int
+            Number of channels of hidden state.
+        kernel_size: (int, int)
+            Size of the convolutional kernel.
+        bias: bool
+            Whether or not to add the bias.
+        """
 
-        # get batch and spatial sizes
-        batch_size = input_.data.size()[0]
-        spatial_size = input_.data.size()[2:]
+        super(ConvLSTMCell, self).__init__()
 
-        # generate empty prev_state, if None is provided
-        if prev_state is None:
-            state_size = [batch_size, self.hidden_size] + list(spatial_size)
-            prev_state = (
-                Variable(torch.zeros(state_size)),
-                Variable(torch.zeros(state_size))
-            )
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
 
-        prev_hidden, prev_cell = prev_state
+        self.kernel_size = kernel_size
+        self.padding = kernel_size[0] // 2, kernel_size[1] // 2
+        self.bias = bias
 
-        # data size is [batch, channel, height, width]
-        stacked_inputs = torch.cat((input_, prev_hidden), 1)
-        gates = self.Gates(stacked_inputs)
+        self.conv = nn.Conv2d(in_channels=self.input_dim + self.hidden_dim,
+                              out_channels=4 * self.hidden_dim,
+                              kernel_size=self.kernel_size,
+                              padding=self.padding,
+                              bias=self.bias)
 
-        # chunk across channel dimension
-        in_gate, remember_gate, out_gate, cell_gate = gates.chunk(4, 1)
+    def forward(self, input_tensor, cur_state):
+        h_cur, c_cur = cur_state
 
-        # apply sigmoid non linearity
-        in_gate = f.sigmoid(in_gate)
-        remember_gate = f.sigmoid(remember_gate)
-        out_gate = f.sigmoid(out_gate)
+        combined = torch.cat([input_tensor, h_cur], dim=1)  # concatenate along channel axis
 
-        # apply tanh non linearity
-        cell_gate = f.tanh(cell_gate)
+        combined_conv = self.conv(combined)
+        cc_i, cc_f, cc_o, cc_g = torch.split(combined_conv, self.hidden_dim, dim=1)
+        i = torch.sigmoid(cc_i)
+        f = torch.sigmoid(cc_f)
+        o = torch.sigmoid(cc_o)
+        g = torch.tanh(cc_g)
 
-        # compute current cell and hidden state
-        cell = (remember_gate * prev_cell) + (in_gate * cell_gate)
-        hidden = out_gate * f.tanh(cell)
+        c_next = f * c_cur + i * g
+        h_next = o * torch.tanh(c_next)
 
-        return hidden, cell
+        return h_next, c_next
+
+    def init_hidden(self, batch_size, image_size):
+        height, width = image_size
+        return (torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device),
+                torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device))
+
+
 
 
 ```
