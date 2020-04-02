@@ -37,6 +37,8 @@ a) Encoder                  (encodes the input list)
 b) Encoder embedding vector (the final embedding of the entire input sequence)  
 c) Decoder                  (decodes the embedding vector into the output sequence)  
   
+### Machine Translation Example 
+
 Let's make it concrete with our machine translation example:
 
 Encoder takes the Spanish sequence as input  
@@ -53,9 +55,6 @@ Before you move any further, I highly recommend the following [excellent blog po
 So lets assume you fully understand what is a LSTM cell and (most importantly) what is the hidden state. Typically the encoder and decoder in seq2seq models consists of LSTM cells, such as the following figure:
 
 ![](/images/mnist_video_pred/encoder-decoder_2.png) 
-
-
-
 
 
 Several extensions to the vanilla seq2seq model exists; the most notable being the [Attention module](https://arxiv.org/pdf/1409.0473.pdf).
@@ -75,7 +74,7 @@ Given its strong modelling power in sequential tasks, we expect this model to pe
 
 Lets write some code!
 
-For our ConvLSTM implementation we use the implementation from the [CortexNet](https://arxiv.org/pdf/1706.02735.pdf) [ndrplz](https://raw.githubusercontent.com/ndrplz/ConvLSTM_pytorch/master/convlstm.py)
+For our ConvLSTM implementation we use the pytorch implementation from [ndrplz](https://raw.githubusercontent.com/ndrplz/ConvLSTM_pytorch/master/convlstm.py)
 
 It looks as follows:
 
@@ -138,8 +137,6 @@ class ConvLSTMCell(nn.Module):
         height, width = image_size
         return (torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device),
                 torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device))
-
-
 
 
 ```
