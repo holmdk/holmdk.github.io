@@ -56,8 +56,8 @@ Here at the equations for the regular LSTM cell:
 \begin{equation}f_{t}=\sigma\left(W_{x f} x_{t}+W_{h f} h_{t-1}+W_{c f} \circ c_{t-1}+b_{f}\right)\end{equation}
 \begin{equation}c_{t}=f_{t} \circ c_{t-1}+i_{t} \circ \tanh \left(W_{x c} x_{t}+W_{h c} h_{t-1}+b_{c}\right)\end{equation}
 \begin{equation}o_{t}=\sigma\left(W_{x o} x_{t}+W_{h o} h_{t-1}+W_{c o} \circ c_{t}+b_{o}\right)\end{equation}
-\begin{equation}h_{t}=o_{t} \circ \tanh \left(c_{t}\right)\end{equation}
-$\circ denotes the Hadamard product like before.
+\begin{equation}h_{t}=o_{t} \circ \tanh \left(c_{t}\right)\end{equation}  
+ $\circ$ denotes the Hadamard product like before.
 
 So lets assume you fully understand what a LSTM cell is and how cell states and hidden states work. Typically the encoder and decoder in seq2seq models consists of LSTM cells, such as the following figure:
 
@@ -79,13 +79,17 @@ This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use 
 Once we are dealing with frames we have 2D tensors, and to encode and decode these in a sequential nature we need an extension of the original LSTM seq2seq models.
 
 This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015](https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf), ConvLSTM modifies the inner workings of the LSTM mechanism to use the convolution operation instead of simple matrix multiplication. Lets write our new equations for the ConvLSTM cells:
-\begin{equation}i_{t}=\sigma\left(W_{x i} * \mathcal{X}_{t}+W_{h i} * \mathcal{H}_{t-1}+W_{c i} \circ \mathcal{C}_{t-1}+b_{i}\right)\end{equation}
-\begin{equation}f_{t}=\sigma\left(W_{x f} * \mathcal{X}_{t}+W_{h f} * \mathcal{H}_{t-1}+W_{c f} \circ \mathcal{C}_{t-1}+b_{f}\right)\end{equation}
-\begin{equation}\mathcal{C}_{t}=f_{t} \circ \mathcal{C}_{t-1}+i_{t} \circ \tanh \left(W_{x c} * \mathcal{X}_{t}+W_{h c} * \mathcal{H}_{t-1}+b_{c}\right)\end{equation}
-\begin{equation}o_{t}=\sigma\left(W_{x o} * \mathcal{X}_{t}+W_{h o} * \mathcal{H}_{t-1}+W_{c o} \circ \mathcal{C}_{t}+b_{o}\right)\end{equation}
-\begin{equation}\mathcal{H}_{t}=o_{t} \circ \tanh \left(\mathcal{C}_{t}\right)\end{equation}
+\begin{equation}i_{t}=\sigma\left(W_{x i} * \mathcal{X}_{t}+W_{h i} * \mathcal{H}_{t-1}+W_{c i} \circ \mathcal{C}_{t-1}+b_{i}\right)\end{equation}  
 
-$* denotesthe convolution operation and $\circ denotes the Hadamard product like before.
+\begin{equation}f_{t}=\sigma\left(W_{x f} * \mathcal{X}_{t}+W_{h f} * \mathcal{H}_{t-1}+W_{c f} \circ \mathcal{C}_{t-1}+b_{f}\right)\end{equation}  
+
+\begin{equation}\mathcal{C}_{t}=f_{t} \circ \mathcal{C}_{t-1}+i_{t} \circ \tanh \left(W_{x c} * \mathcal{X}_{t}+W_{h c} * \mathcal{H}_{t-1}+b_{c}\right)\end{equation}  
+
+\begin{equation}o_{t}=\sigma\left(W_{x o} * \mathcal{X}_{t}+W_{h o} * \mathcal{H}_{t-1}+W_{c o} \circ \mathcal{C}_{t}+b_{o}\right)\end{equation}  
+
+\begin{equation}\mathcal{H}_{t}=o_{t} \circ \tanh \left(\mathcal{C}_{t}\right)\end{equation}  
+
+$\*$ denotes the convolution operation and $\circ$ denotes the Hadamard product like before.
 
 
 By using the convolution operation ConvLSTM are suitable for processing images in a sequential nature such as for frame prediction.
