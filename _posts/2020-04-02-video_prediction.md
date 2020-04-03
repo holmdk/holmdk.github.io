@@ -46,7 +46,7 @@ For our machine translation example, this would mean:
 **Hopefully part a) and part c) are somewhat clear to you**. Arguably the most tricky part in terms of intuition for the seq2seq model is the encoder embedding vector. How do you define this vector exactly?  
 
 
-## Meet RNN
+## 2.1 Meet RNN
 
 Before you move any further, I highly recommend the following [excellent blog post](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) on RNN/LSTM. Understanding LSTM's intimately is an essential prerequisite for most seq2seq models!  
 
@@ -62,7 +62,7 @@ where $\circ$ denotes the Hadamard product.
 So lets assume you fully understand what a LSTM cell is and how cell states and hidden states work. Typically the encoder and decoder in seq2seq models consists of LSTM cells, such as the following figure:
 
 ![](/images/mnist_video_pred/encoder-decoder_2.png) 
-### Breakdown
+### 2.1.1 Breakdown
 - The LSTM Encoder consists of 4 LSTM cells and the LSTM Decoder consists of 4 LSTM cells.
 - Each input (word or word embedding) is fed into a new encoder LSTM cell together with the hidden state (output) from the previous LSTM cell
 - The hidden state from the final LSTM encoder cell is (typically) the Encoder embedding. It can also be the entire sequence of hidden states from all encoder LSTM cells (note - this is not the same as attention)
@@ -72,13 +72,13 @@ Several extensions to the vanilla seq2seq model exists; the most notable being t
 
 Having discussed the seq2seq model, lets turn our attention to the task of frame prediction!
 
-## Frame Prediction
+## 2.2 Frame Prediction
 Frame prediction is inherently different from the original tasks of seq2seq such as machine translation. 
 This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use fully-connected layers to encode and decode word embeddings (which are represented as vectors). 
 
 Once we are dealing with frames we have 2D tensors, and to encode and decode these in a sequential nature we need an extension of the original LSTM seq2seq models.
 
-### ConvLSTM
+### 2.2.1 ConvLSTM
 This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015](https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf), ConvLSTM modifies the inner workings of the LSTM mechanism to use the convolution operation instead of simple matrix multiplication. Lets write our new equations for the ConvLSTM cells:  
 
 \begin{equation}i_{t}=\sigma\left(W_{x i} * X_{t}+W_{h i} * H_{t-1}+W_{c i} \circ C_{t-1}+b_{i}\right)\end{equation}
@@ -95,16 +95,16 @@ Otherwise, everything remains the same.
 
 If you prefer not to dive into the above equations, the primary thing to note is the fact that we use convolutions (kernel) to process our input images to derive feature maps rather than vectors derived from fully-connected layers. 
 
-### _n_-step Ahead Prediction
+### 2.2.2 _n_-step Ahead Prediction
 
-The most difficult thing when designing frame prediction models (with ConvLSTM) is defining how to produce the frame predictions. We list two methods here (but others do also exist):
+One of the most difficult things when designing frame prediction models (with ConvLSTM) is defining how to produce the frame predictions. We list two methods here (but others do also exist):
 
 1. Predict the next frame and feed it back into the network for a number of _n_ steps to produce _n_ frame predictions.
 2. Predict all future time steps in one-go by having the number of ConvLSTM layers _l_ be equal to the number of _n_ steps. Thus, we can simply use the output from each decoder LSTM cell as our predictions
 
 In this tutorial we will focus on number 1 - especially since it can produce any number of predictions in the future without having to change the architecture completely. Furthermore, if we are to predict many steps in the future option 2 becomes increasingly computationally expensive.
 
-### Lets write some code!
+### 2.2.3 Lets write some code!
 
 For our ConvLSTM implementation we use the pytorch implementation from [ndrplz](https://raw.githubusercontent.com/ndrplz/ConvLSTM_pytorch/master/convlstm.py)
 
