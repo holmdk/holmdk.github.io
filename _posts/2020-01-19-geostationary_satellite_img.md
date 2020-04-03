@@ -1,7 +1,7 @@
 # Tips for working with Geostationary Satellite Images using PyTroll
 This post will include several tips for working with geostationary satellite images, which can often cause a lot of problems. I will primarily use the **geostationary European Meteosat 2nd. Generation (MSG) satellites.**
 
-% {% include screenshot url="gitblog/commit.png" %} 
+![](/images/geos/download.png) 
 
 ## Projections using pyresample
 Correct projections are absolutely essential before we can do any machine learning or analysis with satellite images.  
