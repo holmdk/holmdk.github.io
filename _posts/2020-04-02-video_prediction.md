@@ -176,6 +176,7 @@ Hopefully you can see how the equations defined earlier are written in the above
 
 The specific architecture we use looks as follows:
 |Layer name  | shape output (general) | shape output (example) |
+|------------|------------------------|------------------------|
 | Input Layer | (batch_size, time_step, n_channel, width, height) | (12, 10, 1, 64, 64) | 
 | ConvLSTM Encoder 1 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
 | ConvLSTM Encoder 2 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
@@ -195,6 +196,11 @@ To achieve this we implement a 3D-CNN layer. The 3D CNN layer does the following
 1) Takes as input (nf, width, height) for each batch and time_step
 2) Iterates over all _n_ predicted frames using 3D kernel
 3) Outputs one channel (1, width, height) per image - i.e., the predicted pixel values 
+
+
+#### Sigmoid layer
+
+Finally, as we have transformed the pixel values into [0, 1] we use a sigmoid function to turn our 3D CNN activations into [0, 1].  
 
 And that is basically it!   
 
