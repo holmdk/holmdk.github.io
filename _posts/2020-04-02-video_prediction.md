@@ -58,7 +58,7 @@ Here at the equations for the regular LSTM cell:
 \begin{equation}o_{t}=\sigma\left(W_{x o} x_{t}+W_{h o} h_{t-1}+W_{c o} \circ c_{t}+b_{o}\right)\end{equation}
 \begin{equation}h_{t}=o_{t} \circ \tanh \left(c_{t}\right)\end{equation}  
  $\circ$ denotes the Hadamard product.
-\begin{equation}i_{t}=\sigma\left(W_{x i} * \mathcal{X}_{t}+W_{h i} * \mathcal{H}_{t-1}+W_{c i} \circ \mathcal{C}_{t-1}+b_{i}\right)\end{equation}  
+$\mathcal{H}_{t}=o_{t} \circ \tanh \left(\mathcal{C}_{t}\right)$
 
 So lets assume you fully understand what a LSTM cell is and how cell states and hidden states work. Typically the encoder and decoder in seq2seq models consists of LSTM cells, such as the following figure:
 
@@ -90,6 +90,8 @@ This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015
 \begin{equation}o_{t}=\sigma\left(W_{x o} * \mathcal{X}_{t}+W_{h o} * \mathcal{H}_{t-1}+W_{c o} \circ \mathcal{C}_{t}+b_{o}\right)\end{equation}  
 
 \begin{equation}\mathcal{H}_{t}=o_{t} \circ \tanh \left(\mathcal{C}_{t}\right)\end{equation}  
+
+$\mathcal{H}_{t}=o_{t} \circ \tanh \left(\mathcal{C}_{t}\right)$
 
 $\*$ denotes the convolution operation and $\circ$ denotes the Hadamard product like before.
 
