@@ -80,17 +80,10 @@ Once we are dealing with frames we have 2D tensors, and to encode and decode the
 
 This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015](https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf), ConvLSTM modifies the inner workings of the LSTM mechanism to use the convolution operation instead of simple matrix multiplication. Lets write our new equations for the ConvLSTM cells:
 
-\begin{equation}i_{t}=\sigma\left(W_{x i} * X_{t}+W_{h i} * H_{t-1}+W_{c i} \circ C_{t-1}+b_{i}\right)\end{equation}  
-
-\begin{equation}f_{t}=\sigma\left(W_{x f} * \mathcal{X}_{t}+W_{h f} * \mathcal{H}_{t-1}+W_{c f} \circ \mathcal{C}_{t-1}+b_{f}\right)\end{equation}  
-
-\begin{equation}\mathcal{C}_{t}=f_{t} \circ \mathcal{C}_{t-1}+i_{t} \circ \tanh \left(W_{x c} * \mathcal{X}_{t}+W_{h c} * \mathcal{H}_{t-1}+b_{c}\right)\end{equation}  
-
-\begin{equation}o_{t}=\sigma\left(W_{x o} * \mathcal{X}_{t}+W_{h o} * \mathcal{H}_{t-1}+W_{c o} \circ \mathcal{C}_{t}+b_{o}\right)\end{equation}  
-
-\begin{equation}\mathcal{H}_{t}=o_{t} \circ \tanh \left(\mathcal{C}_{t}\right)\end{equation}  
-
-$\mathcal{H}_{t}=o_{t} \circ \tanh \left(\mathcal{C}_{t}\right)$
+\begin{equation}i_{t}=\sigma\left(W_{x i} * X_{t}+W_{h i} * H_{t-1}+W_{c i} \circ C_{t-1}+b_{i}\right)\end{equation}
+\begin{equation}f_{t}=\sigma\left(W_{x f} * X_{t}+W_{h f} * H_{t-1}+W_{c f} \circ C_{t-1}+b_{f}\right)\end{equation}
+\begin{equation}C_{t}=f_{t} \circ C_{t-1}+i_{t} \circ \tanh \left(W_{x c} * X_{t}+W_{h c} * H_{t-1}+b_{c}\right)\end{equation} \begin{equation}o_{t}=\sigma\left(W_{x o} * X_{t}+W_{h o} * H_{t-1}+W_{c o} \circ C_{t}+b_{o}\right)\end{equation}  
+\begin{equation}H_{t}=o_{t} \circ \tanh \left(C_{t}\right)\end{equation}
 
 $\*$ denotes the convolution operation and $\circ$ denotes the Hadamard product like before.
 
