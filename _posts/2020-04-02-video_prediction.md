@@ -18,7 +18,7 @@ numpy
 
 
 # 1: Dataloader
-Download the dataloader script from the following repo [tychovdo/MovingMNIST](https://github.com/tychovdo/MovingMNIST)
+Download the dataloader script from the following repo [tychovdo/MovingMNIST](https://github.com/tychovdo/MovingMNIST).  
 This dataset was originally developed and described [here](http://www.cs.toronto.edu/~nitish/unsup_video.pdf), and it contains 10000 sequences each of length 20 with frame size 64 x 64 showing 2 digits moving in various trajectories (and overlapping).
 
 Something to note beforehand is the inherent randomness of the digit trajectories. We do expect that this will become a major hurdle for the model we are about to describe, and we also note that newer approaches such as Variational Autoencoders might be a more efficient model for this type of task.
@@ -29,7 +29,7 @@ The specific model type we will be using is called a seq2seq model, which is typ
 
 The original papers on seq2seq are [Sutskever et al., 2014](https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf) and [Cho et al., 2014](http://emnlp2014.org/papers/pdf/EMNLP2014179.pdf).
 
-In its simplest case, the seq2seq model takes a sequence of items as input (such as words, word embeddings, letters, etc.) and outputs another sequence of items. For machine translation, the input could be a sequence of Spanish words and the output would be the English translation.
+In its simplest configuration, the seq2seq model takes a sequence of items as input (such as words, word embeddings, letters, etc.) and outputs another sequence of items. For machine translation, the input could be a sequence of Spanish words and the output would be the English translation.
 
 We can separate the seq2seq model into three parts, which are the a) encoder, b) encoder embedding vector and c) decoder. Lets write them out and describe each:
 
@@ -37,42 +37,49 @@ a) Encoder                  (encodes the input list)
 b) Encoder embedding vector (the final embedding of the entire input sequence)  
 c) Decoder                  (decodes the embedding vector into the output sequence)  
   
-### Machine Translation Example 
+For our machine translation example, this would mean:
 
-Let's make it concrete with our machine translation example:
+- Encoder takes the Spanish sequence as input by processing each word sequentially
+- The encoder outputs an embedding vector as the final representation of our input  
+- Decoder takes the embedding vector as input and then outputs the English translation sequence  
 
-Encoder takes the Spanish sequence as input  
-Encoder embedding vector is the final representation of our encoder  
-Decoder outputs the English translation sequence.  
-
-Hopefully part a) and part c) are somewhat clear to you. Arguably the most tricky part in terms of intuition for the seq2seq model is the encoder embedding vector. How do you define this vector exactly?  
+**Hopefully part a) and part c) are somewhat clear to you**. Arguably the most tricky part in terms of intuition for the seq2seq model is the encoder embedding vector. How do you define this vector exactly?  
 
 
 ## Meet RNN
 
-Before you move any further, I highly recommend the following [excellent blog post](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) on RNN/LSTM. Understanding LSTM's intimately is an essential prerequisite for seq2seq models!  
+Before you move any further, I highly recommend the following [excellent blog post](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) on RNN/LSTM. Understanding LSTM's intimately is an essential prerequisite for most seq2seq models!  
 
-So lets assume you fully understand what is a LSTM cell and (most importantly) what is the hidden state. Typically the encoder and decoder in seq2seq models consists of LSTM cells, such as the following figure:
+So lets assume you fully understand what a LSTM cell is and how cell states and hidden states work. Typically the encoder and decoder in seq2seq models consists of LSTM cells, such as the following figure:
 
 ![](/images/mnist_video_pred/encoder-decoder_2.png) 
-
+### Breakdown
+- The LSTM Encoder consists of 4 LSTM cells and the LSTM Decoder consists of 4 LSTM cells.
+- Each input (word or word embedding) is fed into a new encoder LSTM cell together with the hidden state (output) from the previous LSTM cell
+- The hidden state from the final LSTM encoder cell is (typically) the Encoder embedding. It can also be the entire sequence of hidden states from all encoder LSTM cells (note - this is not the same as attention)
+- The LSTM decoder uses the encoder state(s) as input and procceses these iteratively through the various LSTM cells to produce the output. This can be unidirectional or bidirectional
 
 Several extensions to the vanilla seq2seq model exists; the most notable being the [Attention module](https://arxiv.org/pdf/1409.0473.pdf).
 
+Having discussed the seq2seq model, lets turn our attention to the task of frame prediction!
 
 ## Frame Prediction
 Frame prediction is inherently different from the original tasks of seq2seq such as machine translation. 
-This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use fully-connected layers to encode and decode word embeddings (which are represented as vectors). If you need a primer on LSTM, please read this [excellent blog post](https://colah.github.io/posts/2015-08-Understanding-LSTMs/).
+This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use fully-connected layers to encode and decode word embeddings (which are represented as vectors). 
 
-Once we are dealing with frames we have 2D tensors, and to encode and decode these in a sequential nature we need an extension of the original seq2seq models using LSTMs.
+Once we are dealing with frames we have 2D tensors, and to encode and decode these in a sequential nature we need an extension of the original LSTM seq2seq models.
 
-This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015](https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf), ConvLSTM modifies the inner workings of the LSTM mechanism to use convolutions instead of simple matrix multiplication.
+This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015](https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf), ConvLSTM modifies the inner workings of the LSTM mechanism to use the convolution operation instead of simple matrix multiplication.
 This makes it suitable for processing images in a sequential nature and thus use it for frame prediction.
 
-Given its strong modelling power in sequential tasks, we expect this model to perform well on frame prediction tasks such as the MovingMNIST dataset.
+The most difficult thing when designing frame prediction models (with ConvLSTM) is defining how to produce the frame predictions. We list two methods here:
 
+1. Predict the next frame and feed it back into the network for a number of _n_ steps to produce _n_ frame predictions.
+2. Predict all future time steps in one-go by having the number of ConvLSTM layers _l_ be equal to the number of _n_ steps. Thus, we can simply use the output from each decoder LSTM cell as our predictions
 
-Lets write some code!
+In this tutorial we will focus on number 1 - especially since it can produce any number of predictions in the future without having to change the architecture completely. Furthermore, if we are to predict many steps in the future option 2 becomes increasingly computationally expensive.
+
+### Lets write some code!
 
 For our ConvLSTM implementation we use the pytorch implementation from [ndrplz](https://raw.githubusercontent.com/ndrplz/ConvLSTM_pytorch/master/convlstm.py)
 
