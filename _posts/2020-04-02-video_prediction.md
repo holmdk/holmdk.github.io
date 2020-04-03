@@ -50,14 +50,14 @@ For our machine translation example, this would mean:
 
 Before you move any further, I highly recommend the following [excellent blog post](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) on RNN/LSTM. Understanding LSTM's intimately is an essential prerequisite for most seq2seq models!  
 
-Here at the equations for the regular LSTM cell:
+Here are the equations for the regular LSTM cell:  
 
 \begin{equation}i_{t}=\sigma\left(W_{x i} x_{t}+W_{h i} h_{t-1}+W_{c i} \circ c_{t-1}+b_{i}\right)\end{equation}
 \begin{equation}f_{t}=\sigma\left(W_{x f} x_{t}+W_{h f} h_{t-1}+W_{c f} \circ c_{t-1}+b_{f}\right)\end{equation}
 \begin{equation}c_{t}=f_{t} \circ c_{t-1}+i_{t} \circ \tanh \left(W_{x c} x_{t}+W_{h c} h_{t-1}+b_{c}\right)\end{equation}
 \begin{equation}o_{t}=\sigma\left(W_{x o} x_{t}+W_{h o} h_{t-1}+W_{c o} \circ c_{t}+b_{o}\right)\end{equation}
 \begin{equation}h_{t}=o_{t} \circ \tanh \left(c_{t}\right)\end{equation}
- $\circ$ denotes the Hadamard product.
+where $\circ$ denotes the Hadamard product.  
 
 So lets assume you fully understand what a LSTM cell is and how cell states and hidden states work. Typically the encoder and decoder in seq2seq models consists of LSTM cells, such as the following figure:
 
@@ -78,19 +78,24 @@ This is due to the fact, that RNN modules (LSTM) in the encoder and decoder use 
 
 Once we are dealing with frames we have 2D tensors, and to encode and decode these in a sequential nature we need an extension of the original LSTM seq2seq models.
 
-This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015](https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf), ConvLSTM modifies the inner workings of the LSTM mechanism to use the convolution operation instead of simple matrix multiplication. Lets write our new equations for the ConvLSTM cells:
+### ConvLSTM
+This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015](https://papers.nips.cc/paper/5955-convolutional-lstm-network-a-machine-learning-approach-for-precipitation-nowcasting.pdf), ConvLSTM modifies the inner workings of the LSTM mechanism to use the convolution operation instead of simple matrix multiplication. Lets write our new equations for the ConvLSTM cells:  
 
 \begin{equation}i_{t}=\sigma\left(W_{x i} * X_{t}+W_{h i} * H_{t-1}+W_{c i} \circ C_{t-1}+b_{i}\right)\end{equation}
 \begin{equation}f_{t}=\sigma\left(W_{x f} * X_{t}+W_{h f} * H_{t-1}+W_{c f} \circ C_{t-1}+b_{f}\right)\end{equation}
 \begin{equation}C_{t}=f_{t} \circ C_{t-1}+i_{t} \circ \tanh \left(W_{x c} * X_{t}+W_{h c} * H_{t-1}+b_{c}\right)\end{equation} \begin{equation}o_{t}=\sigma\left(W_{x o} * X_{t}+W_{h o} * H_{t-1}+W_{c o} \circ C_{t}+b_{o}\right)\end{equation}
 \begin{equation}H_{t}=o_{t} \circ \tanh \left(C_{t}\right)\end{equation}
 
-$\*$ denotes the convolution operation and $\circ$ denotes the Hadamard product like before.
+$\*$ denotes the convolution operation and $\circ$ denotes the Hadamard product like before.  
+
+Can you spot the subtle difference between these equations and regular LSTM? We simply replace the multiplications in the four gates between a) our weight matrices and input ($W_{x} x_{t}$ with $W_{x} * X_{t}$) and b) our weight matrices and previous hidden state ($W_{h} h_{t-1}$ with $W_{h} * H_{t-1}$). Otherwise, everything remains the same.  
 
 
-By using the convolution operation ConvLSTM are suitable for processing images in a sequential nature such as for frame prediction.
+If you prefer not to dive into the above equations, the primary thing to note is the fact that we use convolutions (kernel) to process our input images to derive feature maps rather than vectors derived from fully-connected layers. 
 
-The most difficult thing when designing frame prediction models (with ConvLSTM) is defining how to produce the frame predictions. We list two methods here:
+### _n_-step Ahead Prediction
+
+The most difficult thing when designing frame prediction models (with ConvLSTM) is defining how to produce the frame predictions. We list two methods here (but others do also exist):
 
 1. Predict the next frame and feed it back into the network for a number of _n_ steps to produce _n_ frame predictions.
 2. Predict all future time steps in one-go by having the number of ConvLSTM layers _l_ be equal to the number of _n_ steps. Thus, we can simply use the output from each decoder LSTM cell as our predictions
