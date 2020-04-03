@@ -1,21 +1,15 @@
 # Video Prediction using ConvLSTM Autoencoder (PyTorch)
 
 In this guide, I will show you how to code a ConvLSTM autoencoder (seq2seq) model for frame prediction using the MovingMNIST dataset.
-This framework can easily be extended for any other dataset as long as it complies with some standard configuration settings.
+This framework can easily be extended for any other dataset as long as it complies with the standard pytorch Dataset configuration.
 
-Before starting, we will briefly outline the libraries we are using and the steps we need to take:
+Before starting, we will briefly outline the libraries we are using:
 
 ```
 pytorch
 pytorch-lightning (for multi-GPU and easy/optimal configuration)
 numpy
 ```
-
-## Steps:
-**1. Define dataloader**  
-**2. Define model architecture**  
-**3. Define main script for running training using pytorch-lightning**  
-
 
 # 1: Dataloader
 Download the dataloader script from the following repo [tychovdo/MovingMNIST](https://github.com/tychovdo/MovingMNIST).  
@@ -177,11 +171,335 @@ class ConvLSTMCell(nn.Module):
 Hopefully you can see how the equations defined earlier are written in the above code for the forward pass.
 
 
-## Training
+
+### 2.2.4 Seq2Seq implementation
+
+The specific architecture we use looks as follows:
+|Layer name  | shape output (general) | shape output (example) |
+| Input Layer | (batch_size, time_step, n_channel, width, height) | (12, 10, 1, 64, 64) | 
+| ConvLSTM Encoder 1 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
+| ConvLSTM Encoder 2 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
+| ConvLSTM Decoder 1 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
+| ConvLSTM Decoder 2 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
+| 3D CNN Decoder | (batch_size, time_step, n_channel, width, height) | (12, 10, 1, 64, 64) |
+
+#### Encoder and Decoder
+We use two ConvLSTM cells for both the encoder and the decoder (encoder_1_convlstm, encoder_2_convlstm, decoder_1_convlstm, decoder_2_convlstm).   
+
+#### 3D CNN
+Our final ConvLSTM cell (decoder_2_convlstm) outputs _nf_ feature maps for each predicted frame (12, 10, 64, 64, 64).
+
+As we are essentially doing regression (predicting pixel values), we need to transform these feature maps into actual predictions similar to what you do in classical image classification.  
+
+To achieve this we implement a 3D-CNN layer. The 3D CNN layer does the following:
+1) Takes as input (nf, width, height) for each batch and time_step
+2) Iterates over all _n_ predicted frames using 3D kernel
+3) Outputs one channel (1, width, height) per image - i.e., the predicted pixel values 
+
+And that is basically it!   
+
+
+Now we define the python implementation for the seq2seq model:
+
+
+```python
+import torch
+import torch.nn as nn
+
+from models.ConvLSTMCell import ConvLSTMCell
+
+class EncoderDecoderConvLSTM(nn.Module):
+    def __init__(self, nf, in_chan):
+        super(EncoderDecoderConvLSTM, self).__init__()
+
+        """ ARCHITECTURE 
+
+        # Encoder (ConvLSTM)
+        # Encoder Vector (final hidden state of encoder)
+        # Decoder (ConvLSTM) - takes Encoder Vector as input
+        # Decoder (3D CNN) - produces regression predictions for our model
+
+        """
+        self.encoder_1_convlstm = ConvLSTMCell(input_dim=in_chan,
+                                               hidden_dim=nf,
+                                               kernel_size=(3, 3),
+                                               bias=True)
+
+        self.encoder_2_convlstm = ConvLSTMCell(input_dim=nf,
+                                               hidden_dim=nf,
+                                               kernel_size=(3, 3),
+                                               bias=True)
+
+        self.decoder_1_convlstm = ConvLSTMCell(input_dim=nf,  # nf + 1
+                                               hidden_dim=nf,
+                                               kernel_size=(3, 3),
+                                               bias=True)
+
+        self.decoder_2_convlstm = ConvLSTMCell(input_dim=nf,
+                                               hidden_dim=nf,
+                                               kernel_size=(3, 3),
+                                               bias=True)
+
+        self.decoder_CNN = nn.Conv3d(in_channels=nf,
+                                     out_channels=1,
+                                     kernel_size=(1, 3, 3),
+                                     padding=(0, 1, 1))
+
+
+    def autoencoder(self, x, seq_len, future_step, h_t, c_t, h_t2, c_t2, h_t3, c_t3, h_t4, c_t4):
+
+        outputs = []
+
+        # encoder
+        for t in range(seq_len):
+            h_t, c_t = self.encoder_1_convlstm(input_tensor=x[:, t, :, :],
+                                               cur_state=[h_t, c_t])  # we could concat to provide skip conn here
+            h_t2, c_t2 = self.encoder_2_convlstm(input_tensor=h_t,
+                                                 cur_state=[h_t2, c_t2])  # we could concat to provide skip conn here
+
+        # encoder_vector
+        encoder_vector = h_t2
+
+        # decoder
+        for t in range(future_step):
+            h_t3, c_t3 = self.decoder_1_convlstm(input_tensor=encoder_vector,
+                                                 cur_state=[h_t3, c_t3])  # we could concat to provide skip conn here
+            h_t4, c_t4 = self.decoder_2_convlstm(input_tensor=h_t3,
+                                                 cur_state=[h_t4, c_t4])  # we could concat to provide skip conn here
+            encoder_vector = h_t4
+            outputs += [h_t4]  # predictions
+
+        outputs = torch.stack(outputs, 1)
+        outputs = outputs.permute(0, 2, 1, 3, 4)
+        outputs = self.decoder_CNN(outputs)
+        outputs = torch.nn.Sigmoid()(outputs)
+
+        return outputs
+
+    def forward(self, x, future_seq=0, hidden_state=None):
+
+        """
+        Parameters
+        ----------
+        input_tensor:
+            5-D Tensor of shape (b, t, c, h, w)        #   batch, time, channel, height, width
+        """
+
+        # find size of different input dimensions
+        b, seq_len, _, h, w = x.size()
+
+        # initialize hidden states
+        h_t, c_t = self.encoder_1_convlstm.init_hidden(batch_size=b, image_size=(h, w))
+        h_t2, c_t2 = self.encoder_2_convlstm.init_hidden(batch_size=b, image_size=(h, w))
+        h_t3, c_t3 = self.decoder_1_convlstm.init_hidden(batch_size=b, image_size=(h, w))
+        h_t4, c_t4 = self.decoder_2_convlstm.init_hidden(batch_size=b, image_size=(h, w))
+
+        # autoencoder forward
+        outputs = self.autoencoder(x, seq_len, future_seq, h_t, c_t, h_t2, c_t2, h_t3, c_t3, h_t4, c_t4)
+
+        return outputs
+```
+
+
+
+## 3. Training
 
 Maybe you are already aware of the excellent library pytorch-lightning, which essentially takes all the boiler-plate engineering out of machine learning when using pytorch, such as the following commands: optimizer.zero_grad(), optimizer.step().   
 It also standardizes training modules and enables easy multi-GPU functionality and mixed-precision training for Volta architecture GPU cards.
 
 There is so much functionality available in pytorch-lightning, and I will try to demonstrate the workflow I have created, which I think works fairly well.
+
+
+
+```python
+
+# import libraries
+import os
+import matplotlib.pyplot as plt
+import torch
+import torchvision
+from torch.nn import functional as F
+from torch.utils.data import DataLoader
+import pytorch_lightning as pl
+from pytorch_lightning import Trainer
+from multiprocessing import Process
+
+from utils.start_tensorboard import run_tensorboard
+from models.seq2seq_ConvLSTM import EncoderDecoderConvLSTM
+from data.MovingMNIST import MovingMNIST
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--lr', default=1e-4, type=float, help='learning rate')
+parser.add_argument('--beta_1', type=float, default=0.9, help='decay rate 1')
+parser.add_argument('--beta_2', type=float, default=0.98, help='decay rate 2')
+parser.add_argument('--batch_size', default=12, type=int, help='batch size')
+parser.add_argument('--epochs', type=int, default=300, help='number of epochs to train for')
+parser.add_argument('--use_amp', default=False, type=bool, help='mixed-precision training')
+parser.add_argument('--n_gpus', type=int, default=1, help='number of GPUs')
+parser.add_argument('--n_hidden_dim', type=int, default=64, help='number of hidden dim for ConvLSTM layers')
+
+opt = parser.parse_args()
+
+##########################
+######### MODEL ##########
+##########################
+
+class MovingMNISTLightning(pl.LightningModule):
+
+    def __init__(self, hparams=None, model=None):
+        super(MovingMNISTLightning, self).__init__()
+
+        # default config
+        self.path = os.getcwd() + '/data'
+        self.normalize = False
+        self.model = model
+
+        # logging config
+        self.log_images = True
+
+        # Training config
+        self.criterion = torch.nn.MSELoss()
+        self.batch_size = opt.batch_size
+        self.n_steps_past = 10
+        self.n_steps_ahead = 10  # 4
+
+    def create_video(self, x, y_hat, y):
+        # predictions with input for illustration purposes
+        preds = torch.cat([x.cpu(), y_hat.unsqueeze(2).cpu()], dim=1)[0]
+
+        # entire input and ground truth
+        y_plot = torch.cat([x.cpu(), y.unsqueeze(2).cpu()], dim=1)[0]
+
+        # error (l2 norm) plot between pred and ground truth
+        difference = (torch.pow(y_hat[0] - y[0], 2)).detach().cpu()
+        zeros = torch.zeros(difference.shape)
+        difference_plot = torch.cat([zeros.cpu().unsqueeze(0), difference.unsqueeze(0).cpu()], dim=1)[
+            0].unsqueeze(1)
+
+        # concat all images
+        final_image = torch.cat([preds, y_plot, difference_plot], dim=0)
+
+        # make them into a single grid image file
+        grid = torchvision.utils.make_grid(final_image, nrow=self.n_steps_past + self.n_steps_ahead)
+
+        return grid
+
+    def forward(self, x):
+        x = x.to(device='cuda')
+
+        output = self.model(x, future_seq=self.n_steps_ahead)
+
+        return output
+
+    def training_step(self, batch, batch_idx):
+        x, y = batch[:, 0:self.n_steps_past, :, :, :], batch[:, self.n_steps_past:, :, :, :]
+        x = x.permute(0, 1, 4, 2, 3)
+        y = y.squeeze()
+
+        y_hat = self.forward(x).squeeze()  # is squeeze neccessary?
+
+        loss = self.criterion(y_hat, y)
+
+        # save learning_rate
+        lr_saved = self.trainer.optimizers[0].param_groups[-1]['lr']
+        lr_saved = torch.scalar_tensor(lr_saved).cuda()
+
+        # save predicted images every 250 global_step
+        if self.log_images:
+            if self.global_step % 250 == 0:
+                final_image = self.create_video(x, y_hat, y)
+
+                self.logger.experiment.add_image(
+                    'epoch_' + str(self.current_epoch) + '_step' + str(self.global_step) + '_generated_images',
+                    final_image, 0)
+                plt.close()
+
+        tensorboard_logs = {'train_mse_loss': loss,
+                            'learning_rate': lr_saved}
+
+        return {'loss': loss, 'log': tensorboard_logs}
+
+
+    def test_step(self, batch, batch_idx):
+        # OPTIONAL
+        x, y = batch
+        y_hat = self.forward(x)
+        return {'test_loss': self.criterion(y_hat, y)}
+
+
+    def test_end(self, outputs):
+        # OPTIONAL
+        avg_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
+        tensorboard_logs = {'test_loss': avg_loss}
+        return {'avg_test_loss': avg_loss, 'log': tensorboard_logs}
+
+
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.parameters(), lr=opt.lr, betas=(opt.beta_1, opt.beta_2))
+
+    @pl.data_loader
+    def train_dataloader(self):
+        train_data = MovingMNIST(
+            train=True,
+            data_root=self.path,
+            seq_len=self.n_steps_past + self.n_steps_ahead,
+            image_size=64,
+            deterministic=True,
+            num_digits=2)
+
+        train_loader = torch.utils.data.DataLoader(
+            dataset=train_data,
+            batch_size=self.batch_size,
+            shuffle=True)
+
+        return train_loader
+
+    @pl.data_loader
+    def test_dataloader(self):
+        test_data = MovingMNIST(
+            train=False,
+            data_root=self.path,
+            seq_len=self.n_steps_past + self.n_steps_ahead,
+            image_size=64,
+            deterministic=True,
+            num_digits=2)
+
+        test_loader = torch.utils.data.DataLoader(
+            dataset=test_data,
+            batch_size=self.batch_size,
+            shuffle=True)
+
+        return test_loader
+
+
+
+def run_trainer():
+    conv_lstm_model = EncoderDecoderConvLSTM(nf=opt.n_hidden_dim, in_chan=1)
+
+    model = MovingMNISTLightning(model=conv_lstm_model)
+
+    trainer = Trainer(max_epochs=opt.epochs,
+                      gpus=opt.n_gpus,
+                      distributed_backend='dp',
+                      early_stop_callback=False,
+                      use_amp=opt.use_amp
+                      )
+
+    trainer.fit(model)
+
+
+if __name__ == '__main__':
+    p1 = Process(target=run_trainer)                    # start trainer
+    p1.start()
+    p2 = Process(target=run_tensorboard(new_run=True))  # start tensorboard
+    p2.start()
+    p1.join()
+    p2.join()
+
+```
+
+
 
 
