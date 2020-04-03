@@ -178,14 +178,7 @@ Hopefully you can see how the equations defined earlier are written in the above
 ### 2.2.4 Seq2Seq implementation
 
 The specific architecture we use looks as follows:
-|Layer name  | shape output (general) | shape output (example) |
-|------------|------------------------|------------------------|
-| Input Layer | (batch_size, time_step, n_channel, width, height) | (12, 10, 1, 64, 64) | 
-| ConvLSTM Encoder 1 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
-| ConvLSTM Encoder 2 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
-| ConvLSTM Decoder 1 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
-| ConvLSTM Decoder 2 | (batch_size, time_step, n_f, width, height) | (12, 10, 64, 64, 64) | 
-| 3D CNN Decoder | (batch_size, time_step, n_channel, width, height) | (12, 10, 1, 64, 64) |
+![](/images/mnist_video_pred/table.PNG) 
 
 #### Encoder and Decoder
 We use two ConvLSTM cells for both the encoder and the decoder (encoder_1_convlstm, encoder_2_convlstm, decoder_1_convlstm, decoder_2_convlstm).   
