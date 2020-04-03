@@ -105,7 +105,7 @@ One of the most difficult things when designing frame prediction models (with Co
 
 In this tutorial we will focus on number 1 - especially since it can produce any number of predictions in the future without having to change the architecture completely. Furthermore, if we are to predict many steps in the future option 2 becomes increasingly computationally expensive.
 
-### 2.2.3 Lets write some code!
+### 2.2.3 ConvLSTM implementation
 
 For our ConvLSTM implementation we use the pytorch implementation from [ndrplz](https://raw.githubusercontent.com/ndrplz/ConvLSTM_pytorch/master/convlstm.py)
 
@@ -173,4 +173,15 @@ class ConvLSTMCell(nn.Module):
 
 
 ```
+
+Hopefully you can see how the equations defined earlier are written in the above code for the forward pass.
+
+
+## Training
+
+Maybe you are already aware of the excellent library pytorch-lightning, which essentially takes all the boiler-plate engineering out of machine learning when using pytorch, such as the following commands: optimizer.zero_grad(), optimizer.step().   
+It also standardizes training modules and enables easy multi-GPU functionality and mixed-precision training for Volta architecture GPU cards.
+
+There is so much functionality available in pytorch-lightning, and I will try to demonstrate the workflow I have created, which I think works fairly well.
+
 
