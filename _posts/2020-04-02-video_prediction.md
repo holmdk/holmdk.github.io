@@ -6,9 +6,12 @@ This framework can easily be extended for any other dataset as long as it compli
 Before starting, we will briefly outline the libraries we are using:
 
 ```
-pytorch
-pytorch-lightning (for multi-GPU and easy/optimal configuration)
-numpy
+python=3.6.8
+torch=1.1.0
+torchvision=0.3.0
+pytorch-lightning=0.7.1
+matplotlib=3.1.3
+tensorboard=1.15.0a20190708
 ```
 
 # 1: Dataloader
