@@ -506,6 +506,27 @@ if __name__ == '__main__':
 
 ```
 
+Most of the functionality of ```class MovingMNISTLightning``` is fairly self-explanatory. Here is the overall workflow:
+
+1) We instantiate our class and define all the relevant parameters
+2) We take a training_step (for each batch), where we 
+--   a) create a prediction y_hat
+--   b) calculate the MSE loss
+--   c) save a visualization of the prediction with input and ground truth every 250 global step into tensorboard
+--   d) save the learning rate and loss for each batch into tensorboard
+
+
+When we actually run our ```main.py``` script we can define several relevant parameters. For example, if we want to run with 2 GPUs, mixed-precision and batch_size = 16 we simply type:
+
+```bash
+python main.py --n_gpus=2 --use_amp=True --batch_size=16
+```
+
+Feel free to experiment with various configurations!
+
+When we run the ```main.py``` script we automatically spin up a tensorboard session using multiprocessing, and here you can track the performance of our model iteratively and also see the visualization of our predictions every 250 global step. 
+
+
 
 
 
