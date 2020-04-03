@@ -88,9 +88,10 @@ This is where Convolutional LSTM (ConvLSTM) comes in. Presented at [NIPS in 2015
 
 $\*$ denotes the convolution operation and $\circ$ denotes the Hadamard product like before.  
 
-Can you spot the subtle difference between these equations and regular LSTM? We simply replace the multiplications in the four gates between   
-a) weight matrices and input ($W_{x} x_{t}$ with $W_{x} * X_{t}$) and   
-b) weight matrices and previous hidden state ($W_{h} h_{t-1}$ with $W_{h} * H_{t-1}$).   
+Can you spot the subtle difference between these equations and regular LSTM? We simply replace the multiplications in the four gates between    
+
+a) weight matrices and input ($W_{x} x_{t}$ **with** $W_{x} * X_{t}$) and   
+b) weight matrices and previous hidden state ($W_{h} h_{t-1}$ **with** $W_{h} * H_{t-1}$).   
 Otherwise, everything remains the same.  
 
 If you prefer not to dive into the above equations, the primary thing to note is the fact that we use convolutions (kernel) to process our input images to derive feature maps rather than vectors derived from fully-connected layers. 
