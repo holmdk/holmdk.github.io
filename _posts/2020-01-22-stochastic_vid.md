@@ -36,8 +36,15 @@ The reguralisation is specifically done on the latent space. However, this regul
 For a given input x - we encode a latent representation z=e(x) - and finally reconstruct our input in the decoder, d(z)  
 
 **Variational autoencoder:**  
-For a given input x - we encode a latent **distribution** p(z|g) - then we sample from this latent representation \mathbf{z} \sim \mathbf{p}(\mathbf{z} \mid \mathbf{x}) - and finally reconstruct our input in the decoder, d(z).
+For a given input x - we encode a latent **distribution** p(z|g) - then we sample from this latent representation \mathbf{z} \sim \mathbf{p}(\mathbf{z} \mid \mathbf{x}) - and finally reconstruct our input in the decoder, d(z).  
 
+
+Why go from deterministic to probabilstic?  
+The reason is that we can directly express (and calculate a loss for) the latent space regularisation, rather than just having a single point reconstruction loss. In practice, the latent distribution is typically a Gaussian since we can represent it via the mean and covariance matrix. The regularisation term (or loss) then becomes the difference between the encoded distribution and a standard Gaussian, which can be expressed using the Kullback-Leibler (KL) divergence. **Minimizing this loss effectively means, that we train our model to encode the latent distribution to be close to a standard normal distribution, thus achieving a regularized latent space.**  Obviously only applying the regularization loss would be nonsensical (decoder would not play any role), meaning that we still impose the reconstruction loss upon our entire encoding-decoding scheme.
+
+In short:  
+a) Reconstruction loss enables our model to learn an effective encoding and decoding of data
+b) Regularization loss imposes regularisation upon our latent space  
 
 
 Their method is analogous tovariational autoencoders since a latent variable is sam-pled from a prior (in this case a learned prior).  After-wards, the latent variable is combined with an encodingof the previous frames to generate future frames that in-cludes time-varying degrees of uncertain
