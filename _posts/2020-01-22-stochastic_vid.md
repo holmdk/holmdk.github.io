@@ -46,6 +46,13 @@ In short:
 a) Reconstruction loss enables our model to learn an effective encoding and decoding of data
 b) Regularization loss imposes regularisation upon our latent space  
 
+What we obtain by implementing b can be expressed through two main properties, which are continuity and completeness.
+Continuity refers to the fact, that two points close in latent space should give not give completely different outcomes once decoded. Completeness means that any point sampled from the latent space and subsequently decoded should give realistic or meaningful outputs. 
+
+
+" in order to avoid these effects we have to regularise both the covariance matrix and the mean of the distributions returned by the encoder. In practice, this regularisation is done by enforcing distributions to be close to a standard normal distribution (centred and reduced)"
+"With this regularisation term, we prevent the model to encode data far apart in the latent space and encourage as much as possible returned distributions to “overlap”, satisfying this way the expected continuity and completeness conditions. "
+
 
 Their method is analogous tovariational autoencoders since a latent variable is sam-pled from a prior (in this case a learned prior).  After-wards, the latent variable is combined with an encodingof the previous frames to generate future frames that in-cludes time-varying degrees of uncertain
 
