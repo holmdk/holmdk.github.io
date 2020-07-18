@@ -35,6 +35,7 @@ atari-py
 matplotlib
 pygame
 seaborn
+pandas
 ```
 
 
