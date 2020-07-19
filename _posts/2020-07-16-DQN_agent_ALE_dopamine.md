@@ -28,7 +28,7 @@ We encountered some issues related to GPU vs. CPU in our setting, so I will incl
 Nevertheless, assuming you are using ```Python 3.7.x```, these are the libraries you need to install (which can all be installed via ```pip```):
 
 ```
-tensorflow=1.15
+tensorflow-gpu=1.15   (or tensorflow==1.15  for CPU version)
 cmake
 dopamine-rl
 atari-py
