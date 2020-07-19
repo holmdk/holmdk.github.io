@@ -190,5 +190,6 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 
 ## References
-Mnih, Volodymyr, et al. "Human-level control through deep reinforcement learning." nature 518.7540 (2015): 529-533.
-Hessel, Matteo, et al. "Rainbow: Combining improvements in deep reinforcement learning." Thirty-Second AAAI Conference on Artificial Intelligence. 2018.
+Mnih, Volodymyr, et al. "Human-level control through deep reinforcement learning." nature 518.7540 (2015): 529-533.  
+Hessel, Matteo, et al. "Rainbow: Combining improvements in deep reinforcement learning." Thirty-Second AAAI Conference on Artificial Intelligence. 2018.  
+Castro, Pablo Samuel, et al. "Dopamine: A research framework for deep reinforcement learning." arXiv preprint arXiv:1812.06110 (2018).  
