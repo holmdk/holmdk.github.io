@@ -170,7 +170,7 @@ Here is a gif of our model:
 
 And there you have it! That is basically how little code we actually need to implement a state-of-the-art DQN model for running Atari 2600 games with a live demonstration!
 
-Feel free to experiment with the significantly better [rainbow model](https://github.com/google/dopamine/blob/master/dopamine/agents/rainbow/configs/rainbow_aaai.gin) (Hessel et al., 2018), which is also included in the dopamine library, as well as other non-Atari games!
+Feel free to experiment with the significantly better [rainbow model](https://github.com/google/dopamine/blob/master/dopamine/agents/rainbow/configs/rainbow_aaai.gin) ([Hessel et al., 2018](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/download/17204/16680)), which is also included in the dopamine library, as well as other non-Atari games!
 
 Hope you enjoyed this guide!
 
