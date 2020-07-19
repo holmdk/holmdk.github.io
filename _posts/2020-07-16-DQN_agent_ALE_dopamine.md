@@ -40,7 +40,7 @@ pandas
 
 
 ## Training our agent 
-Hyperparameter tuning for Deep Reinforcement Learning requires significant amount of compute resources, and therefore considered out of scope for this guide. Luckily, the authors of dopamine have provided the specific hyperparameters used in Bellemare et al. (2017), which can be found in the following [file](https://github.com/google/dopamine/blob/master/dopamine/agents/dqn/configs/dqn_icml.gin). We use the content of this "config file" as a string that we parse using the [gin configuration framework](https://github.com/google/gin-config).  It contains all relevant training, environment and hyperparameters needed, meaning we essentially only need to update the game we want to run (although the hyperparameters might not work out equally well for all games).
+Hyperparameter tuning for Deep Reinforcement Learning requires significant amount of compute resources, and therefore considered out of scope for this guide. Luckily, the authors of Dopamine have provided the specific hyperparameters used in Bellemare et al. (2017), which can be found in the following [file](https://github.com/google/dopamine/blob/master/dopamine/agents/dqn/configs/dqn_icml.gin). We use the content of this "config file" as a string that we parse using the [gin configuration framework](https://github.com/google/gin-config).  It contains all relevant training, environment and hyperparameters needed, meaning we essentially only need to update the game we want to run (although the hyperparameters might not work out equally well for all games).
 
 
 ### Imports
@@ -142,7 +142,7 @@ This should give you a visualization similar to this
 ### Live demonstration
 Now for the fun part!
 
-We will use the ```example_vis_lib``` from inside the ```utils``` folder of the dopamine library. 
+We will use the ```example_vis_lib``` from inside the ```utils``` folder of the Dopamine library. 
 Hence, our final script for running the live demonstration looks as follows:
 
 ```python
@@ -170,7 +170,7 @@ Here is a gif of our model:
 
 And there you have it! That is basically how little code we actually need to implement a state-of-the-art DQN model for running Atari 2600 games with a live demonstration!
 
-Feel free to experiment with the significantly better [rainbow model](https://github.com/google/dopamine/blob/master/dopamine/agents/rainbow/configs/rainbow_aaai.gin) ([Hessel et al., 2018](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/download/17204/16680)), which is also included in the dopamine library, as well as other non-Atari games!
+Feel free to experiment with the significantly better [rainbow model](https://github.com/google/dopamine/blob/master/dopamine/agents/rainbow/configs/rainbow_aaai.gin) ([Hessel et al., 2018](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/download/17204/16680)), which is also included in the Dopamine library, as well as other non-Atari games!
 
 Hope you enjoyed this guide!
 
