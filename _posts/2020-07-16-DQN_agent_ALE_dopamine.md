@@ -131,7 +131,7 @@ We divide this into two sections, which are the visualization of the training op
 
 
 ### Tensorboard logs
-Navigate to the tensorboard logs folder, which can be found inside the ```DQN_PATH``` that you define earlier, and run the following:
+Navigate to the tensorboard logs folder, which can be found inside the ```DQN_PATH``` that you defined earlier, and run the following:
 ```bash
 tensorboard --logdir .
 ```
