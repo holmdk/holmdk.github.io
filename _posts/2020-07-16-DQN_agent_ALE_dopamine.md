@@ -1,7 +1,7 @@
 # Deep Reinforcement Learning for Atari Games using Dopamine
 
 
-In this post, we will look into training a DQN agent for a Atari games using the Google reinforcement learning library [Dopamine](https://github.com/google/dopamine).
+In this post, we will look into training a [DQN agent](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) (Mnih et al., 2015), for Atari 2600 games using the Google reinforcement learning library [Dopamine](https://github.com/google/dopamine).
 While many RL libraries exists, this library is specifically designed with four essential features in mind:
 - Easy experimentation
 - Flexible development
@@ -190,4 +190,5 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 
 ## References
+Mnih, Volodymyr, et al. "Human-level control through deep reinforcement learning." nature 518.7540 (2015): 529-533.
 Hessel, Matteo, et al. "Rainbow: Combining improvements in deep reinforcement learning." Thirty-Second AAAI Conference on Artificial Intelligence. 2018.
