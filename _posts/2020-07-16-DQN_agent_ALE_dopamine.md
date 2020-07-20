@@ -124,6 +124,7 @@ Run the above (which will take a long time!) and you should see the DQN model cr
 
 
 ## Visualizing our agent
+We ran the experiment for roughly 22 hours on a GTX 1070 GPU. 
 As stated earlier, we always want to visualize the results and the "live" performance of our agent.
 We divide this into two sections, which are the visualization of the training optimisation results and live demonstration of its performance.
 
