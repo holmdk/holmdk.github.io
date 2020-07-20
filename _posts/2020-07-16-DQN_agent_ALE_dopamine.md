@@ -165,7 +165,7 @@ if __name__ == '__main__':
 ```
 Run the above, and you should see the script starting to generate images for 1000 steps and then save the images into a video.mp4 file.
 
-Here is a gif of our model:
+Here is a gif of our model:  
 ![Alt Text](/images/video_1000.gif)
 
 ## Conclusion
