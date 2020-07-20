@@ -137,7 +137,7 @@ tensorboard --logdir .
 ```
 
 This should give you a visualization similar to this
-
+![](/images/pong_dqn_training.PNG)  
 
 ### Live demonstration
 Now for the fun part!
