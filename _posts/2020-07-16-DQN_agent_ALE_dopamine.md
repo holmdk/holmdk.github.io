@@ -1,4 +1,5 @@
 # Deep Reinforcement Learning for Atari Games using Dopamine
+![Alt Text](/images/video_100.gif)
 
 
 In this post, we will look into training a [DQN agent](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) (Mnih et al., 2015), for Atari 2600 games using the Google reinforcement learning library [Dopamine](https://github.com/google/dopamine).
@@ -165,7 +166,7 @@ if __name__ == '__main__':
 Run the above, and you should see the script starting to generate images for 1000 steps and then save the images into a video.mp4 file.
 
 Here is a gif of our model:
-
+![Alt Text](/images/video_1000.gif)
 
 ## Conclusion
 
