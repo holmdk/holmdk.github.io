@@ -23,7 +23,7 @@ The premise of deep reinforcement learning is to _"derive efficient representati
   
 \begin{equation}Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[r_{t}+\gamma r_{t+1}+\gamma^{2} r_{t+2}+\ldots \mid s_{t}=s, a_{t}=a, \pi\right]\end{equation}
   
-where $r_{t}$ is the maximum sum of rewards at time _t_ discounted by _\gamma_, obtained using a behavior policy $\pi = P(a|s)$ for each observation-action pair.
+where r_t is the maximum sum of rewards at time _t_ discounted by _\gamma_, obtained using a behavior policy \pi = P(a|s) for each observation-action pair.
   
 There are relatively many details to Deep Q-Learning, such as Experience Replay (Lin, 1993) and an iterative update rule, but we refer the reader to the [original paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) for an excellent walk-through of the mathmatical details. 
 
