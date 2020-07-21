@@ -172,11 +172,12 @@ if __name__ == '__main__':
 ```
 Run the above, and you should see the script starting to generate images for 1000 steps and then save the images into a video.mp4 file.
 
-Here is a gif of our model:  
+Here is a gif of our model:   
+
 ![Alt Text](/images/video_1000.gif)  
 
 Clearly, the agent is not perfect and does lose quite a few games. Still, it does a relatively good job!  
-We could probably get a close-to-perfect agent if we trained it for a few more days (or a bigger GPU).
+We could probably get a close-to-perfect agent if we trained it for a few more days (or use a bigger GPU).
 
 
 ## 5. Conclusion
