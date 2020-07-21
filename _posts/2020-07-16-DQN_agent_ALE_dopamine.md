@@ -2,7 +2,7 @@
 ![Alt Text](/images/video_100.gif)
 
 
-In this post, we will look into training a [DQN agent](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) (Mnih et al., 2015), for Atari 2600 games using the Google reinforcement learning library [Dopamine](https://github.com/google/dopamine).
+In this post, we will look into training a [Deep Q-Network (DQN) agent](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) (Mnih et al., 2015), for Atari 2600 games using the Google reinforcement learning library [Dopamine](https://github.com/google/dopamine).
 While many RL libraries exists, this library is specifically designed with four essential features in mind:
 - Easy experimentation
 - Flexible development
@@ -18,17 +18,21 @@ In my view, visualization of any trained RL agent is an absolutely must in reinf
 Therefore, we will (of course) include this at the very end!
 
 
-## Brief introduction to Reinforcement Learning and Deep Q-Learning
-The premise of deep reinforcement learning is to "derive efficient representations of the environment from high-dimensional sensory inputs, and use these to generalize past experience to new situations" (DQN paper). 
+## 1. Brief introduction to Reinforcement Learning and Deep Q-Learning
+The premise of deep reinforcement learning is to _"derive efficient representations of the environment from high-dimensional sensory inputs, and use these to generalize past experience to new situations"_ (Mnih et al., 2015). As stated earlier, we will implement the _DQN model_ by Deepmind, which only uses raw pixels and game score as input. The raw pixels are proccessed using convolutional neural networks similar to image classification. The primary difference lies in the **objective function**, which for the DQN agent is called the _optimal action-value function_
 
-The input to the agent is only the raw pixels and the game score, and the model uses convolutional neural networks to process these pixels similar to image classification. The primary difference lies in the objective function, which for the DQN agent is the optimal action-value function:
+\begin{equation}Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[r_{t}+\gamma r_{t+1}+\gamma^{2} r_{t+2}+\ldots \mid s_{t}=s, a_{t}=a, \pi\right]\end{equation}
 
-[INSERT EQUATION]
+which is the maximum sum of rewardsrt discounted by c at each timestep t, achievable by a behaviour policy p 5 P(ajs), after making an
+observation (s) and taking an action (a) (see Methods)19
 
+There are relatively many details to Deep Q-Learning, such as Experience Replay (Lin, 1993) and an iterative update rule, but we refer the reader to the [original paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) for an excellent walk-through of the mathmatical details. 
 
-## Installation
-This guide does not include instructions for installing [Tensorflow](https://www.tensorflow.org/), but we do want to stress that you can use both CPU and GPU version.
-We encountered some issues related to GPU vs. CPU in our setting, so I will include some tips and tricks at the end, which might help you debug your specific installation. 
+One key benefit of DQN compared to previous approaches at the time (2015), was the ability to outperform previous methods for Atari 2600 games using the **same set of hyperparameters** and **only pixel values and game score as input**, which was clearly a tremendous achievement. 
+
+## 2. Installation
+This guide does not include instructions for installing [Tensorflow](https://www.tensorflow.org/), but we do want to stress that you can use **both the CPU and GPU version**.
+We encountered some issues related to GPU vs. CPU in our setting, so I will include some tips and tricks at the end that might help you. 
 
 Nevertheless, assuming you are using ```Python 3.7.x```, these are the libraries you need to install (which can all be installed via ```pip```):
 
@@ -44,11 +48,11 @@ pandas
 ```
 
 
-## Training our agent 
-Hyperparameter tuning for Deep Reinforcement Learning requires significant amount of compute resources, and therefore considered out of scope for this guide. Luckily, the authors of Dopamine have provided the specific hyperparameters used in Bellemare et al. (2017), which can be found in the following [file](https://github.com/google/dopamine/blob/master/dopamine/agents/dqn/configs/dqn_icml.gin). We use the content of this "config file" as a string that we parse using the [gin configuration framework](https://github.com/google/gin-config).  It contains all relevant training, environment and hyperparameters needed, meaning we essentially only need to update the game we want to run (although the hyperparameters might not work out equally well for all games).
+## 3. Training our agent 
+Hyperparameter tuning for Deep Reinforcement Learning requires significant amount of compute resources, and therefore considered out of scope for this guide. Luckily, the authors of Dopamine have provided the specific hyperparameters used in Bellemare et al. (2017), which can be found in the following [file](https://github.com/google/dopamine/blob/master/dopamine/agents/dqn/configs/dqn_icml.gin). We use the content of this "config file" as a string that we parse using the [gin configuration framework](https://github.com/google/gin-config).  It contains all relevant training, environment and hyperparameters needed, meaning we essentially **only need to update which game we want to run** (although the hyperparameters might not work out equally well for all games).
 
 
-### Imports
+### 3.1 Imports
 We start by importing the required libraries
 ```python
 import os
@@ -128,15 +132,13 @@ Run the above (which will take a long time!) and you should see the DQN model cr
 
 
 
-## Visualizing our agent
+## 4. Visualizing our agent
 We ran the experiment for roughly 22 hours on a GTX 1070 GPU. 
 As stated earlier, we always want to visualize the results and the "live" performance of our agent.
-We divide this into two sections, which are the visualization of the training optimisation results and live demonstration of its performance.
+We divide this into **two sections**, which are the a) visualization of the training optimisation results and b) live demonstration of its performance.
 
 
-
-
-### Tensorboard logs
+### a) Tensorboard logs
 Navigate to the tensorboard logs folder, which can be found inside the ```DQN_PATH``` that you defined earlier, and run the following:
 ```bash
 tensorboard --logdir .
@@ -145,7 +147,7 @@ tensorboard --logdir .
 This should give you a visualization similar to this
 ![](/images/pong_dqn_training.PNG)  
 
-### Live demonstration
+### b) Live demonstration
 Now for the fun part!
 
 We will use the ```example_vis_lib``` from inside the ```utils``` folder of the Dopamine library. 
@@ -172,7 +174,7 @@ Run the above, and you should see the script starting to generate images for 100
 Here is a gif of our model:  
 ![Alt Text](/images/video_1000.gif)
 
-## Conclusion
+## 5. Conclusion
 
 And there you have it! That is basically how little code we actually need to implement a state-of-the-art DQN model for running Atari 2600 games with a live demonstration!
 
@@ -181,7 +183,7 @@ Feel free to experiment with the significantly better [rainbow model](https://gi
 Hope you enjoyed this guide!
 
 
-## Tips and tricks (debugging)
+## 6. Tips and tricks (debugging)
 
 You might run into the same issue I did, which was related to my tensorflow installation. 
 Even though I installed the CPU version, the tensorflow libraries looks for my CUDA device when doing computations. 
@@ -193,9 +195,17 @@ Nevertheless, add the following two lines to your script before doing any tensor
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 ```
+  
+If you are having difficulties installing the pip version of tensorflow-gpu, you might also try the pre CUDA and cuDNN compiled conda version.
 
+## 7. References
+  
 
-## References
-Mnih, Volodymyr, et al. "Human-level control through deep reinforcement learning." nature 518.7540 (2015): 529-533.  
-Hessel, Matteo, et al. "Rainbow: Combining improvements in deep reinforcement learning." Thirty-Second AAAI Conference on Artificial Intelligence. 2018.  
-Castro, Pablo Samuel, et al. "Dopamine: A research framework for deep reinforcement learning." arXiv preprint arXiv:1812.06110 (2018).  
+[1] Long-Ji Lin, Reinforcement learning for robots using neural networks (1993), No. CMU-CS-93-103.
+
+[2] M. Hessel, et al., Rainbow: Combining improvements in deep reinforcement learning (2018), Thirty-Second AAAI Conference on Artificial Intelligence.  
+
+[3] P. S. Castro, S.  Moitra, C. Gelada, S. Kumar, and M. G. Bellemare, [Dopamine: A research framework for deep reinforcement learning](https://arxiv.org/abs/1812.06110) (2018), arXiv preprint arXiv:1812.06110.
+
+[4] V. Mnih, et al., (2015), Human-level control through deep reinforcement learning, Nature 518.7540 (529-533).
+
