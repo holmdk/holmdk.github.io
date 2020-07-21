@@ -15,8 +15,9 @@ Additionally, we even got the library to work on Windows - which we think is qui
 
 
 In my view, visualization of any trained RL agent is an absolutely must in reinforcement learning! 
-Therefore, we will (of course) include this for our trained agent at the very end!
+Therefore, we will (of course) include this for our trained agent at the very end!  
 
+We will go through all the pieces of code required, but you can also find all scripts needed in the following [Github repo](https://github.com/holmdk/dopamine_ALE_agent).  
 
 ## 1. Brief introduction to Reinforcement Learning and Deep Q-Learning
 The premise of deep reinforcement learning is to _"derive efficient representations of the environment from high-dimensional sensory inputs, and use these to generalize past experience to new situations"_ (Mnih et al., 2015). As stated earlier, we will implement the _DQN model_ by Deepmind, which only uses raw pixels and game score as input. The raw pixels are proccessed using convolutional neural networks similar to image classification. The primary difference lies in the **objective function**, which for the DQN agent is called the _optimal action-value function_  
