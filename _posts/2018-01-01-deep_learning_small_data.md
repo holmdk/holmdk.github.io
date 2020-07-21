@@ -19,7 +19,11 @@ This regime is termed _double-descent_, and it has also been empirically validat
 To address model selection in the small data domain using highly overparameterized neural networks, we review a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf).
 The paper is an empirical study of generalization error as a function of training set size, which is obviously interesting from an academic point of view. 
 But perhaps even more useful is the fact, that if we can train on a smaller subset of our training data while still obtaining generalizable results, we can reduce the computational overhead in model selection and hyperparmater tuning significantly. 
-And that is exactly the conclusion of the above paper.
+And that is exactly the conclusion of the above paper.  
+
+In this article we will run through some of the key elements of this paper, and also include a few experiments to validate some of the claims from the paper.
+
+
 
 # They also derive a term called the "Minimum Description Lengths" (MDL) for common datasets and modern neural network architectures. 
 # MDL is inspired by the well-known Occam's razor principle, in which the model with the most simple
