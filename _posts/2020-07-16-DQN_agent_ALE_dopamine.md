@@ -2,7 +2,7 @@
 ![Alt Text](/images/video_100.gif)
 
 
-In this post, we will look into training a [Deep Q-Network (DQN) agent](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) (Mnih et al., 2015), for Atari 2600 games using the Google reinforcement learning library [Dopamine](https://github.com/google/dopamine).
+In this post, we will look into training a [Deep Q-Network (DQN) agent](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) (Mnih et al., 2015) for Atari 2600 games using the Google reinforcement learning library [Dopamine](https://github.com/google/dopamine).
 While many RL libraries exists, this library is specifically designed with four essential features in mind:
 - Easy experimentation
 - Flexible development
