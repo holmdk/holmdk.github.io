@@ -132,9 +132,9 @@ Run the above (which will take a long time!) and you should see the DQN model cr
 
 
 ## 4. Visualizing our agent
-We ran the experiment for roughly 22 hours on a GTX 1070 GPU. 
-As stated earlier, we always want to visualize the results and the "live" performance of our agent.
-We divide this into **two sections**, which are the a) visualization of the training optimisation results and b) live demonstration of its performance.
+We ran the experiment for roughly 22 hours on a GTX 1070 GPU.  
+We include a visualization of the optimisation results and the "live" performance of our Pong agent.
+We divide this into **two sections**, which are the _a) visualization of the training optimisation results_ and _b) live demonstration of its performance_.
 
 
 ### a) Tensorboard logs
@@ -173,8 +173,9 @@ if __name__ == '__main__':
 Run the above, and you should see the script starting to generate images for 1000 steps and then save the images into a video.mp4 file.
 
 Here is a gif of our model:  
-![Alt Text](/images/video_1000.gif)
-Clearly, the agent is not perfect and does lose quite a few games. Still, it does a relatively good job!
+![Alt Text](/images/video_1000.gif)  
+
+Clearly, the agent is not perfect and does lose quite a few games. Still, it does a relatively good job!  
 We could probably get a close-to-perfect agent if we trained it for a few more days (or a bigger GPU).
 
 
