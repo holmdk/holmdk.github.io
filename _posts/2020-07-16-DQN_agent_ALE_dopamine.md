@@ -15,7 +15,7 @@ Additionally, we even got the library to work on Windows - which we think is qui
 
 
 In my view, visualization of any trained RL agent is an absolutely must in reinforcement learning! 
-Therefore, we will (of course) include this at the very end!
+Therefore, we will (of course) include this for our trained agent at the very end!
 
 
 ## 1. Brief introduction to Reinforcement Learning and Deep Q-Learning
