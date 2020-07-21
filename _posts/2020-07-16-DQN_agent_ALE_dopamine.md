@@ -145,6 +145,8 @@ tensorboard --logdir .
 
 This should give you a visualization similar to this
 ![](/images/pong_dqn_training.PNG)  
+You can see performance increases relatively slowly after 12 runs.
+
 
 ### b) Live demonstration
 Now for the fun part!
@@ -172,6 +174,9 @@ Run the above, and you should see the script starting to generate images for 100
 
 Here is a gif of our model:  
 ![Alt Text](/images/video_1000.gif)
+Clearly, the agent is not perfect and does lose quite a few games. Still, it does a relatively good job!
+We could probably get a close-to-perfect agent if we trained it for a few more days (or a bigger GPU).
+
 
 ## 5. Conclusion
 
