@@ -63,7 +63,7 @@ Next, we define the root path to save our experiments
 ```python
 DQN_PATH = '/tmp/path/to/save/experiments/dqn' 
 ```
-Then we define the game we want to run (in this instance we run the game "Pong"
+Then, we define the game we want to run (in this instance we run the game "Pong")
 ```python
 GAME = 'Pong' 
 ```
