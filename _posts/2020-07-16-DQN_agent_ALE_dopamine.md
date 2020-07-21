@@ -23,9 +23,8 @@ The premise of deep reinforcement learning is to _"derive efficient representati
 
 \begin{equation}Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[r_{t}+\gamma r_{t+1}+\gamma^{2} r_{t+2}+\ldots \mid s_{t}=s, a_{t}=a, \pi\right]\end{equation}
 
-which is the maximum sum of rewardsrt discounted by c at each timestep t, achievable by a behaviour policy p 5 P(ajs), after making an
-observation (s) and taking an action (a) (see Methods)19
-
+where $r_{t}$ is the maximum sum of rewards at time _t_ discounted by $\gamma$, obtained using a behavior policy $\pi = P(a|s)$ for each observation-action pair.
+  
 There are relatively many details to Deep Q-Learning, such as Experience Replay (Lin, 1993) and an iterative update rule, but we refer the reader to the [original paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) for an excellent walk-through of the mathmatical details. 
 
 One key benefit of DQN compared to previous approaches at the time (2015) was the ability to outperform previous methods for Atari 2600 games using the **same set of hyperparameters** and **only pixel values and game score as input**, which was clearly a tremendous achievement. 
@@ -49,7 +48,7 @@ pandas
 
 
 ## 3. Training our agent 
-Hyperparameter tuning for Deep Reinforcement Learning requires significant amount of compute resources and therefore considered out of scope for this guide. Luckily, the authors of Dopamine have provided the specific hyperparameters used in Bellemare et al. (2017), which can be found in the following [file](https://github.com/google/dopamine/blob/master/dopamine/agents/dqn/configs/dqn_icml.gin). We use the content of this "config file" as a string that we parse using the [gin configuration framework](https://github.com/google/gin-config).  It contains all relevant training, environment and hyperparameters needed, meaning we essentially **only need to update which game we want to run** (although the hyperparameters might not work out equally well for all games).
+Hyperparameter tuning for Deep Reinforcement Learning requires significant amount of compute resources and therefore considered out of scope for this guide. Luckily, the authors of Dopamine have provided the specific hyperparameters used in Bellemare et al. (2017), which can be found in the following [file](https://github.com/google/dopamine/blob/master/dopamine/agents/dqn/configs/dqn_icml.gin). We use the contents of this "config file" as a string that we parse using the [gin configuration framework](https://github.com/google/gin-config). It contains all relevant training, environment and hyperparameters needed, meaning we essentially **only need to update which game we want to run** (although the hyperparameters might not work out equally well for all games).
 
 
 ### 3.1 Imports
