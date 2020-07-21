@@ -19,7 +19,9 @@ Therefore, we will (of course) include this at the very end!
 
 
 ## Brief introduction to Reinforcement Learning and Deep Q-Learning
+The premise of reinforcement learning is to "derive efficient representations of the environment from high-dimensional sensory inputs, and use these to generalize past experience to new situations" (DQN paper). 
 
+deep Q-network agent, receiving only the pixels and the game score as input
 
 
 ## Installation
