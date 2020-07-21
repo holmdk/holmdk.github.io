@@ -21,7 +21,7 @@ Therefore, we will (of course) include this for our trained agent at the very en
 ## 1. Brief introduction to Reinforcement Learning and Deep Q-Learning
 The premise of deep reinforcement learning is to _"derive efficient representations of the environment from high-dimensional sensory inputs, and use these to generalize past experience to new situations"_ (Mnih et al., 2015). As stated earlier, we will implement the _DQN model_ by Deepmind, which only uses raw pixels and game score as input. The raw pixels are proccessed using convolutional neural networks similar to image classification. The primary difference lies in the **objective function**, which for the DQN agent is called the _optimal action-value function_  
 
-\begin{equation}Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[r_{t}+\gamma r_{t+1}+\gamma^{2} r_{t+2}+\ldots \mid s_{t}=s, a_{t}=a, \pi\right]\end{equation}
+![](/images/eq_dqn.PNG)  
   
 where r_t is the maximum sum of rewards at time _t_ discounted by _\gamma_, obtained using a behavior policy \pi = P(a∣s) for each observation-action pair.
   
