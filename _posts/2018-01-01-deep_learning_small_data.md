@@ -1,5 +1,5 @@
 # Model Selection with Large Neural Networks and Small Data
-
+# Is the Curse of Dimensionality a Myth?
 
 Highly overparameterized neural networks can display strong generalization performance, even on small datasets. 
 
@@ -24,3 +24,4 @@ And that is exactly the conclusion of the above paper.
 # They also derive a term called the "Minimum Description Lengths" (MDL) for common datasets and modern neural network architectures. 
 # MDL is inspired by the well-known Occam's razor principle, in which the model with the most simple
 
+# 
