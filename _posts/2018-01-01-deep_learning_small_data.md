@@ -16,7 +16,7 @@ This third regime includes massively overparameterized models, and is defined by
 This regime is termed _double-descent_, and it has also been empirically validated in Nakkiran et al., 2019, for modern neural network architecture on established and challenging datasets.
 
 
-To address model selection in the small data domain using highly overparameterized neural networks, we review a recent ICML 2020 paper by [Deepmind] (https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020).
+To address model selection in the small data domain using highly overparameterized neural networks, we review a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020).
 The paper is an empirical study of generalization error as a function of training set size, which is obviously interesting from an academic point of view. 
 But **perhaps even more useful** is the fact, that if we can **train on a smaller subset** of our training data while maintaining generalizable results, we can **reduce the computational overhead in model selection and hyperparmater tuning significantly**.
 And that is exactly the conclusion of the above paper.  
@@ -25,12 +25,26 @@ In this article we will run through some of the key elements of this paper, and 
 
 
 # 1. Review of classical theory on the bias-variance trade-off
+Before we get started, I will offer you two options. If you are tired of hearing about the bias-variance trade-off for the 100th time, please read the TLDR at the end of this Section 1 and then move on to Section 2. Otherwise, I will briefly introduce the bare minimum needed to understand the basics before moving on with the actual paper. 
+
+
 The predictive error for all supervised learning algorithms can be broken into three parts, which are essential to understand the bias-variance tradeoff. These are;
 1) Bias
 2) Variance
 3) Irreducible error (or noise term)
 
-The irreducible error (sometimes called noise) is a term disconnected from the chosen model and it can never be reduced. It is an aspect of the data arising due an imperfect framing of the problem, meaning no model is able capture the true relationship of the data. 
+The **irreducible error** (sometimes called noise) is a term disconnected from the chosen model which can never be reduced. It is an aspect of the data arising due an imperfect framing of the problem, meaning we will never be able to capture the true relationship of the data no matter how good our model is.
+
+The **bias** term is generally what people think of when they refer to model (predictive) errors. In short, it measures the difference between the "average" model prediction and the ground truth. Average might seem strange in this case as we typically only train one model, but think of it as the average of the range of predictions you get with the same model due to small pertubations or randomness in your data. **High bias** is a sign of poor model fit (underfitting), as it will have a large prediction error on both the training and test set.
+
+Finally, the **variance** term refers to the variability of the model prediction for a given data point. It might sound similar, but the key difference lies in the "average" versus "data point". **High variance** implies high generalization error. For example, while a model might be relatively accurate on the training set, it achieves a considerably poor fit on the test set. This latter scenario (high variance, low bias) is typically the most likely when training overparameterized neural networks, i.e., what we refer to as **overfitting**.
+
+You might have seen the typical dartboard for visualizing the four different combinations of these two terms. While it is a good idea to have solid intuition regarding these four scenarios and how they can be arise, the practical implication implies balancing the bias and variance by modifying various parameters in order to obtain the ideal and optimal setting of low bias and low variance. Though, in real-world scenarios, this is typically easier said than done. 
+
+Cool, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance**.
+
+## TLDR; high variance, low bias is a sign of overfitting, where the model obtains high accuracy on the training (and potentially validation) set but low accuracy on the test set. This typically happens for large and overparameterized neural networks.
+
 
 
 # They also derive a term called the "Minimum Description Lengths" (MDL) for common datasets and modern neural network architectures. 
