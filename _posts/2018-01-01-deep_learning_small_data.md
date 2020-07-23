@@ -48,6 +48,18 @@ Alright, I will assume you know enough about the bias-variance trade-off for now
 
 ## TLDR; high variance, low bias is a sign of overfitting, where the model obtains high accuracy on the training set but low accuracy on the test set. This typically happens for large and overparameterized neural networks, especially on small datasets. 
 
+# Small Data, Big Decisions: Model Selection in the Small-Data Regime Paper Review
+
+Let's briefly review this paper and its main takeaways.
+After that, we will conduct a few experiments of our own, specifically in the setting of imbalanced datasets, which is not included in the actual paper and could be a setting where the tested hypothesis does not hold true.
+
+# MNIST Experiment
+
+
+# Imbalanced Datasets Experiment
+
+
+
 
 
 # They also derive a term called the "Minimum Description Lengths" (MDL) for common datasets and modern neural network architectures. 
