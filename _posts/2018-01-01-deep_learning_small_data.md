@@ -41,6 +41,8 @@ Finally, the **variance** term refers to the variability of the model prediction
 
 You might have seen the typical dartboard for visualizing the four different combinations of these two terms. While it is a good idea to have solid intuition regarding these four scenarios, the practical implication implies balancing the bias and variance. This can be achieved in numerous ways, but the most popular ones are tuning the hyperparameters on a validation set and/or selecting a more complex/simple model. The ultimate goal is to obtain low bias and low variance. Though, in real-world scenarios, this is typically easier said than done, as reducing bias generally leads to an increase in variance, vice versa. 
 
+As a final note, the bias-variance trade-off is purely a theoretical quantity, meaning we cannot quantify it in practice. Instead, we rely on the optimizing the balance between training, validation and test error.
+
 
 Alright, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance**. 
 
