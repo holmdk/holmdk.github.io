@@ -50,11 +50,21 @@ Alright, I will assume you know enough about the bias-variance trade-off for now
 
 # Small Data, Big Decisions: Model Selection in the Small-Data Regime Paper Review
 
-Let's briefly review this paper and its main takeaways.
-After that, we will conduct a few experiments of our own, specifically in the setting of imbalanced datasets, which is not included in the actual paper and could be a setting where the tested hypothesis does not hold true.
+Let's briefly review the main takeaways from the "Small Data, Big Decisions: Model Selection in the Small-Data Regime Paper", followed by a few experiments to verify their claim that generalizability can be obtained using overparameterized models on small datasets, and if there are situations when this does not hold true.
+
+Without further ado, lets try to break down the paper as efficiently as possible.
+
+To reiterate the aim of the paper, it is an empirical investigation of generalization error as a function of training set size on various architectures and hyperparameters for both ImageNet, CIFAR10, MNIST and EMNIST. 
+
+
+The key hypothesis of the paper is; _"overparameterized model architectures seem to maintain their relative ranking in terms of generalization performance, when trained on arbitrarily small subsets of the training set"_. They call this observation the ranking-hypothesis. Layman terms: Lets say we have 10 models to choose from, numbered from 1 to 10. We take a subset of our training data corresponding to 10% and find that model 6 is the best, followed by 4, then 3, and so on.. 
+**The ranking hypothesis postulates, that as we gradually increase the subset percentage from 10% subset all the way up to 100%, we should obtain the exact same ordering of optimal models.** If this hypothesis is true, we can essentially perform model selection and hyperparamteter tuning on a small subset of the original data to the added benefit of much faster convergence. If this was not controversial enough, the authors even take it one step further as they found some experiments where training on small datasets led to more robust model selection (less variance), which certainly seem counterintuitive given that we would expect relatively more noise for smaller datasets.  
+
+The final proposal is the usage of something called softmax-temperature, which should (in theory) yield more generalizeable and well-behaved results after being calbirated on a small held-out dataset compared to classical cross-entropy. As a rough analogy, you can think of this as providing less "false negatives" regarding the number of overfitting cases.
 
 # MNIST Experiment
 
+After that, we will conduct a few experiments of our own, specifically in the setting of imbalanced datasets, which is not included in the actual paper and could be a setting where the tested hypothesis does not hold true.
 
 # Imbalanced Datasets Experiment
 
