@@ -39,11 +39,12 @@ The **bias** term is generally what people think of when they refer to model (pr
 
 Finally, the **variance** term refers to the variability of the model prediction for a given data point. It might sound similar, but the key difference lies in the "average" versus "data point". **High variance** implies high generalization error. For example, while a model might be relatively accurate on the training set, it achieves a considerably poor fit on the test set. This latter scenario (high variance, low bias) is typically the most likely when training overparameterized neural networks, i.e., what we refer to as **overfitting**.
 
-You might have seen the typical dartboard for visualizing the four different combinations of these two terms. While it is a good idea to have solid intuition regarding these four scenarios and how they can be arise, the practical implication implies balancing the bias and variance by modifying various parameters in order to obtain the ideal and optimal setting of low bias and low variance. Though, in real-world scenarios, this is typically easier said than done. 
+You might have seen the typical dartboard for visualizing the four different combinations of these two terms. While it is a good idea to have solid intuition regarding these four scenarios, the practical implication implies balancing the bias and variance. This can be achieved in numerous ways, but the most popular ones are tuning the hyperparameters on a validation set and/or selecting a more complex/simple model. The ultimate goal is to obtain low bias and low variance. Though, in real-world scenarios, this is typically easier said than done, as reducing bias generally leads to an increase in variance, vice versa. 
 
-Cool, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance**.
 
-## TLDR; high variance, low bias is a sign of overfitting, where the model obtains high accuracy on the training (and potentially validation) set but low accuracy on the test set. This typically happens for large and overparameterized neural networks.
+Alright, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance**. 
+
+## TLDR; high variance, low bias is a sign of overfitting, where the model obtains high accuracy on the training set but low accuracy on the test set. This typically happens for large and overparameterized neural networks, especially on small datasets. 
 
 
 
