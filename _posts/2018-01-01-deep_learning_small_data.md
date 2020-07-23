@@ -46,7 +46,7 @@ As a final note, the bias-variance trade-off is purely a theoretical quantity, m
 
 Alright, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance**. 
 
-## TLDR; high variance, low bias is a sign of overfitting, where the model obtains high accuracy on the training set but low accuracy on the test set. This typically happens for large and overparameterized neural networks, especially on small datasets. 
+## TLDR; high variance, low bias is a sign of overfitting. Overfitting happens when a model achieves high accuracy on the training set but low accuracy on the test set. This typically happens for overparameterized neural networks, especially on small datasets.
 
 # Small Data, Big Decisions: Model Selection in the Small-Data Regime Paper Review
 
