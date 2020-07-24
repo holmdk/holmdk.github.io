@@ -4,7 +4,7 @@
 Highly overparameterized neural networks can display strong generalization performance, even on small datasets. 
 
 
-This is certainly a bold claim and many of you are probably shaking your heads right now.  
+This is certainly a bold claim, and I suspect many of you are shaking your heads right now.  
 
 Under the classical teachings of statistical learning, this contradicts the well-known bias-variance tradeoff, i.e., increase model complexity at the expense of generalization error. 
 This scenario only becomes more outspoken for small datasets where the number of parameters, _p_, are larger than the number of observations, _n_. 
@@ -16,7 +16,7 @@ This third regime includes massively overparameterized models, and is defined by
 This regime is termed _double-descent_, and it has also been empirically validated in Nakkiran et al., 2019, for modern neural network architecture on established and challenging datasets.
 
 
-To address model selection in the small data domain using highly overparameterized neural networks, we review a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020).
+To address model selection in the small data domain using highly overparameterized neural networks, we review a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020) - henceforth named as "the paper".
 The paper is an empirical study of generalization error as a function of training set size, which is obviously interesting from an academic point of view. 
 But **perhaps even more useful** is the fact, that if we can **train on a smaller subset** of our training data while maintaining generalizable results, we can **reduce the computational overhead in model selection and hyperparmater tuning significantly**.
 And that is exactly the conclusion of the above paper.  
@@ -60,14 +60,33 @@ To reiterate the aim of the paper, it is an empirical investigation of generaliz
 The key hypothesis of the paper is; _"overparameterized model architectures seem to maintain their relative ranking in terms of generalization performance, when trained on arbitrarily small subsets of the training set"_. They call this observation the ranking-hypothesis. Layman terms: Lets say we have 10 models to choose from, numbered from 1 to 10. We take a subset of our training data corresponding to 10% and find that model 6 is the best, followed by 4, then 3, and so on.. 
 **The ranking hypothesis postulates, that as we gradually increase the subset percentage from 10% subset all the way up to 100%, we should obtain the exact same ordering of optimal models.** If this hypothesis is true, we can essentially perform model selection and hyperparamteter tuning on a small subset of the original data to the added benefit of much faster convergence. If this was not controversial enough, the authors even take it one step further as they found some experiments where training on small datasets led to more robust model selection (less variance), which certainly seem counterintuitive given that we would expect relatively more noise for smaller datasets.  
 
-The final proposal is the usage of something called softmax-temperature, which should (in theory) yield more generalizeable and well-behaved results after being calbirated on a small held-out dataset compared to classical cross-entropy. As a rough analogy, you can think of this as providing less "false negatives" regarding the number of overfitting cases.
+The final proposal is the usage of something called softmax-temperature, which should (in theory) yield more generalizeable and well-behaved results compared to classical cross-entropy after being calibrated on a small held-out dataset, especially relevant for overparameterized neural networks. As a rough analogy, you can think of this as providing less "false negatives" regarding the number of overfitting cases.
 
-# MNIST Experiment
+The softmax temperature works as follows;
 
-After that, we will conduct a few experiments of our own, specifically in the setting of imbalanced datasets, which is not included in the actual paper and could be a setting where the tested hypothesis does not hold true.
+1. We define a held-out calibration dataset, C
+2. We combine regular gradient descent on the training set with gradient descent on C
 
-# Imbalanced Datasets Experiment
+That wraps up the novelty proposed in the paper, and we will now turn to the experimental setting. 
 
+
+# Experiments
+We start by briefly introducing the experimental details, which are all based on the original paper;
+
+- Split of 90%/10% for the training and calibration sets, respectively
+- Random sampling (as balanced subset sampling did not provide any added benefit according to the paper)
+
+
+## MNIST 
+
+We start by replicating the paper's study on MNIST, before moving on with the imbalanced dataset experiment. This is not meant to disprove any of the claims in the paper, but  simply to ensure we have replicated their experimental setup succesfully.
+
+Like in the paper, we implement MLPs of varying width and depth, dropout (not) included, and a few CNN's architectures. 
+
+
+
+## Imbalanced Dataset
+We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true.
 
 
 
