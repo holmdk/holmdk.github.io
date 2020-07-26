@@ -132,11 +132,11 @@ To visualize the results, we report the testing accuracy and testing cross entro
 
 
 **Expectations a priori:**
-- We expect to see cross entropy increase while accuracy decreases when not including temperature scaling (motivation for temperature scaling in the first place)
-- We expect to see lower generalization error when including temperature scaling, and we also expect it to become increasingly pronounced over time (motivation for temperature scaling during gradient descent)
+- Hypothesis 1: We expect to see cross entropy increase while accuracy decreases when not including temperature scaling (motivation for temperature scaling in the first place)
+- Hypothesis 2: We expect to see lower generalization error when including temperature scaling, and we also expect it to become increasingly pronounced over time (motivation for temperature scaling during gradient descent)
 
-
-
+Here are the results from our Hypothesis 1: 
+![](/images/small_data_big_decisions/acc_vs_test_entropy_mean_no_scaling.png)
 
 
 
