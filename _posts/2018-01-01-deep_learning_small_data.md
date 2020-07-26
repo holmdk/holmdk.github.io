@@ -72,11 +72,6 @@ The key hypothesis of the paper is; _"overparameterized model architectures seem
 ## Temperature calibration
 
 
-probabilistic error and miscalibration worsen even as classification error is reduced.
-
-
-One key observation when training neural networks classifiers using cross entropy is that 
-
 
 
 One strange phenomenom of training neural network classifiers is that cross entropy error tends to increase even as classification error is reduced. This seems counterintuitive, but is simply due to models becoming overconfident in their predictions (Guo et al., 2017). We can use something called temperature scaling, which rectifies this overconfidence by calibrating the cross entropy estimates on a small held-out dataset. This yields more generalizeable and well-behaved results compared to classical cross-entropy, especially relevant for overparameterized neural networks. As a rough analogy, you can think of this as providing less "false negatives" regarding the number of overfitting cases.
@@ -84,15 +79,13 @@ One strange phenomenom of training neural network classifiers is that cross entr
 While the authors do not provide explicit details on the exact softmax temperature calibration procedure, we use the following procedure;
 
 - We define a held-out calibration dataset, C, equivalent to 10% of the training data.  
+- We initialize temperature scalar to be xx.xx
 
-- For each training batch iteration;  
-1) Perform regular gradient descent using cross entropy loss  
-2) Calculate cross-entropy loss on our calibration set C  
-3) Use temperature scaling [Guo et al., 2017](https://github.com/gpleiss/temperature_scaling) to calibrate the cross-entropy loss and obtain calibrated cross-entropy  
-4) Perform gradient descent on calibrated cross-entropy  
+- For each epoch;
+1) Calculate cross-entropy loss on our calibration set C 
+2) Optimize the temperature scalar using gradient descent on the calibration set [Guo et al., 2017](https://github.com/gpleiss/temperature_scaling) 
+3) Use the updated temperature scalar to calibrate the regular cross entropy during gradient descent   
 - After training for 50 epochs, we calculate the test error
-
-
 
 That covers all the details of the paper. Lets turn to the experimental setting.
 
@@ -109,34 +102,40 @@ We start by replicating the paper's study on MNIST, before moving on with the im
 - Split of 90%/10% for the training and calibration sets, respectively
 - Random sampling (as balanced subset sampling did not provide any added benefit according to the paper)
 - 50 epochs
-- Adam with fixed learning rates [10e-4, 3 * 10e-4, 10e-3] (the authors also include over optimizers but we focus exclusively on using Adam)
+- Adam with fixed learning rate [10e-4] 
 - Batch size = 256
 - Fully connected MLPs with 3 hidden layers and 2048 units each
 - With and without dropout 
 - A simple convolutional network with 4 layers, 5x5 spatial kernel, stride 1 and 256 channels
 - Logistic regression
-- 30 different seeds to visualize uncertainty bands 
+- 10 different seeds to visualize uncertainty bands  (30 in original paper)
 
 The authors also mention experimenting with replacing ReLU with tanh, batch-norm, layer-norm etc., but it is unclear if these tests were included in their final results. Thus, we only consider the experiment using the above settings. 
 
 
-
 ### Experiment 1: How does temperature scaling during gradient descent affect generalization?
-As an initial experiment, we want to validate if temperature scaling during gradient descent improves generalization.
-For this, we train a MLP using ReLU and 3 hidden layers of 2048 units each, respectively. We do not include dropout and we train for 50 epochs.
+As an initial experiment, we want to validate why temperature scaling is needed.
+For this, we train an MLP using ReLU and 3 hidden layers of 2048 units each, respectively. We do not include dropout and we train for 50 epochs.
 
-To visualize the results, we report the testing accuracy and testing cross entropy after each epoch to see how (and if) temperature scaling improves generalization when the model becomes increasingly overconfident. For computational purposes, we conduct our test using 10 different seeds rather than 30.
+**Our hypothesis is:**: The test cross entropy should gradually increase while test accuracy decreases over time (motivation for temperature scaling in the first place, model overconfidence). 
 
-
-
-
-
-**Expectations a priori:**
-- Hypothesis 1: We expect to see cross entropy increase while accuracy decreases when not including temperature scaling (motivation for temperature scaling in the first place)
-- Hypothesis 2: We expect to see lower generalization error when including temperature scaling, and we also expect it to become increasingly pronounced over time (motivation for temperature scaling during gradient descent)
-
-Here are the results from our Hypothesis 1: 
+**Here are the results from this initial experiment:**
 ![](/images/small_data_big_decisions/acc_vs_test_entropy_mean_no_scaling.png)
+Clearly, the test entropy does decline initially and then gradually increase over time while test accuracy keeps improving. This is evidence in favor of hypothesis 1. Figure 3 in Guo et al., 2017, demonstrates the exact same effect on CIFAR-100. 
+*Note:* We have smoothed the results a bit to make the effect more visible. 
+
+
+**Conclusions from Experiment 1:**
+- If we keep training large neural networks for sufficiently long, we start to see overconfident probabilistic predictions, making them less useful out-of-sample. 
+
+
+To remedy this effect, we can incorporate temperature scaling which a) ensures probabilistic forecasts are more stable and reliable out-of-sample and b) improves generalization by scaling training cross entropy during gradient descent. This was shown in Guo et al., 2017.
+
+
+### Replicate the conclusion of the paper
+Having shown that temperature scaling is needed, we now turn to the primary experiment - i.e., how does test cross-entropy vary as a function of the size of our training dataset.
+
+We are essentially replicating Figure 5 on page 5 of the paper. Our results look as follows:
 
 
 
@@ -149,4 +148,6 @@ We will now conduct an experiment for the case of imbalanced datasets, which is 
 # They also derive a term called the "Minimum Description Lengths" (MDL) for common datasets and modern neural network architectures. 
 # MDL is inspired by the well-known Occam's razor principle, in which the model with the most simple
 
-# 
+# - **Hypothesis 2:** If we turn on temperature scaling, we expect to see lower and more stable test cross entropy error during training (as demonstrated in Guo et al., 2017)
+
+**Here are the results from our Hypothesis 2:**
