@@ -121,9 +121,11 @@ The authors also mention experimenting with replacing ReLU with tanh, batch-norm
 
 
 
-### Experiment 1: How does temperature scaling during gradient descent improve generalization?
+### Experiment 1: How does temperature scaling during gradient descent affect generalization?
 As an initial experiment, we want to validate if temperature scaling during gradient descent improves generalization.
-For this, we train a MLP with 3 hidden layers of 2048 units each, respectively, and ReLU activation. We do not include dropout and we train for 50 epochs and report the testing accuracy after each epoch to see how (and if) temperature scaling improves generalization when the model becomes increasingly overconfident. For computational purposes, we conduct our test using 10 different seeds rather than 30.
+For this, we train a MLP using ReLU and 3 hidden layers of 2048 units each, respectively. We do not include dropout and we train for 50 epochs.
+
+To visualize the results, we report the testing accuracy and testing cross entropy after each epoch to see how (and if) temperature scaling improves generalization when the model becomes increasingly overconfident. For computational purposes, we conduct our test using 10 different seeds rather than 30.
 
 
 
