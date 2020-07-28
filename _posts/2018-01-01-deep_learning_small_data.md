@@ -10,13 +10,7 @@ Highly overparameterized neural networks can display strong generalization perfo
 This is certainly a bold claim, and I suspect many of you are shaking your heads right now.  
 
 Under the classical teachings of statistical learning, this contradicts the well-known bias-variance tradeoff, i.e., increase model complexity at the expense of generalization error. 
-This scenario only becomes more outspoken for small datasets where the number of parameters, _p_, are larger than the number of observations, _n_. 
-
-Nevertheless, this claim has been theoretically and empirically investigated by several researchers recently [insert citations]. 
-
-In one recent paper (Belkin et al., 2019), the authors claim that in addition to the traditional overfitting and underfitting regimes, there exist a third regime called the _interpolation threshold_.
-This third regime includes massively overparameterized models, and is defined by a peak in generalization error followed by gradual decline.
-This regime is termed _double-descent_, and it has also been empirically validated in Nakkiran et al., 2019, for modern neural network architecture on established and challenging datasets.
+This effect becomes even more pronounced for small datasets where the number of parameters, _p_, are larger than the number of observations, _n_. 
 
 
 To address model selection in the small data domain using highly overparameterized neural networks, we review a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020) - henceforth named as "the paper".
@@ -53,11 +47,13 @@ Alright, I will assume you know enough about the bias-variance trade-off for now
 
 # Small Data, Big Decisions: Model Selection in the Small-Data Regime Paper Review
 
-To reiterate the aim of the paper, it is an empirical investigation of generalization error as a function of training set size on various architectures and hyperparameters for both ImageNet, CIFAR10, MNIST and EMNIST. 
+The long-held viewpoint regarding overfitting for overparamterized neural networks has been challenged recently by several researchers [insert citations].
+One author (Belkin et al., 2019) even claims that a third regime exists besides underfitting and overfitting, which is called the _interpolation threshold_.
+This regime  includes massively overparameterized models that you would expect to overfit the data excessively. Nevertheless, it has been shown to demonstrate gradual decline in generalization error following an initial peak. This scenario is termed _double-descent_, and it has also been empirically validated in Nakkiran et al., 2019 for modern neural network architectures on established and challenging datasets.
 
-While there are many interesting hypothesis and empirical findings in the paper, we will focus exclusively on the **relative ranking hypothesis** (more on this in a moment). If the hypothesis is true, that essentially mean **you** can potentially perform model selection and hyperparameter tuning on a small subset of your training dataset for your next experiment, and by doing so save computational resources and your valuable training time. Due the this reason, we believe this hypothesis to be the most applicable and relevant for the majority of the people reading this post. 
+While there are many interesting hypothesis and empirical findings within this line of research, we will focus exclusively on the **relative ranking hypothesis**. Before we explain this hypothesis, we note that if proven true then **you** can potentially perform model selection and hyperparameter tuning on a small subset of your training dataset for your next experiment, and by doing so save computational resources and valuable training time. Due the this reason, we believe this hypothesis to be one of the most applicable and relevant for the majority of the people reading this post. 
 
-As a final experiment, we will also investigate one setting that was not investigated in the above paper and could potentially invalidate their claim, which is **imbalanced datasets**. 
+As an additional experiment not included in the literature (as far as we know), we will investigate one setting that could potentially invalidate the relative ranking hypothesis, which is **imbalanced datasets**. 
 
 Without further ado, lets try to break down the paper as efficiently as possible and include a few experiment.
 
@@ -70,9 +66,6 @@ The key hypothesis of the paper is; _"overparameterized model architectures seem
 **The ranking hypothesis postulates, that as we gradually increase the subset percentage from 10% subset all the way up to 100%, we should obtain the exact same ordering of optimal models.** If this hypothesis is true, we can essentially perform model selection and hyperparamteter tuning on a small subset of the original data to the added benefit of much faster convergence. If this was not controversial enough, the authors even take it one step further as they found some experiments where training on small datasets led to more robust model selection (less variance), which certainly seem counterintuitive given that we would expect relatively more noise for smaller datasets.  
 
 ## Temperature calibration
-
-
-
 
 One strange phenomenom of training neural network classifiers is that cross entropy error tends to increase even as classification error is reduced. This seems counterintuitive, but is simply due to models becoming overconfident in their predictions (Guo et al., 2017). We can use something called temperature scaling, which rectifies this overconfidence by calibrating the cross entropy estimates on a small held-out dataset. This yields more generalizeable and well-behaved results compared to classical cross-entropy, especially relevant for overparameterized neural networks. As a rough analogy, you can think of this as providing less "false negatives" regarding the number of overfitting cases.
 
@@ -132,7 +125,7 @@ Clearly, the test entropy does decline initially and then gradually increase ove
 To remedy this effect, we can incorporate temperature scaling which a) ensures probabilistic forecasts are more stable and reliable out-of-sample and b) improves generalization by scaling training cross entropy during gradient descent. This was shown in Guo et al., 2017.
 
 
-### Replicate the conclusion of the paper
+### Relative Ranking Hypothesis 
 Having shown that temperature scaling is needed, we now turn to the primary experiment - i.e., how does test cross-entropy vary as a function of the size of our training dataset.
 
 We are essentially replicating Figure 5 on page 5 of the paper. Our results look as follows:
@@ -140,7 +133,13 @@ We are essentially replicating Figure 5 on page 5 of the paper. Our results look
 
 
 ## Imbalanced Dataset
-We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true.
+We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true. We generate an artificially imbalanced version of MNIST which has only two digits, 1 and 5, with a proportionate split of 90/10% of the training dataset.
+
+We randomly sample our train and calibration split similar to previous experiment.
+
+Our results are as follows:
+
+
 
 
 
