@@ -150,7 +150,7 @@ and the **imbalanced version**
 ![](/images/small_data_big_decisions/distribution_imbalanced.png)
 
 
-After training our agents again for this imbalanced version, we obtain the following results:
+After training our different models again for this imbalanced version, we obtain the following results:
 
 
 
