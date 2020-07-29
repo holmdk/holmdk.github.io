@@ -150,6 +150,10 @@ and the **imbalanced version**
 ![](/images/small_data_big_decisions/distribution_imbalanced.png)
 
 
+While a plethora of different methods for overcoming the problem of imbalanced datasets exists, we want to investigate and isloate the effect of having an imbalanced dataset for the relative ranking hypothesis, i.e., can we still use model selection and hyperparameter tuning on smaller subsets of our original data in the imbalance data setting.
+If the reader wants to review some of these different methods for mitigating the effect of imbalance on training neural networks, we kindly refer to https://arxiv.org/pdf/1710.05381.pdf.
+
+
 After training our different models again for this imbalanced version, we obtain the following results:
 
 
