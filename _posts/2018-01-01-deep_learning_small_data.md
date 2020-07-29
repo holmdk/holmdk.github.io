@@ -137,12 +137,21 @@ We will now conduct an experiment for the case of imbalanced datasets, which is 
 
 We use an artificially imbalanced MNIST dataset version from https://github.com/ufoym/imbalanced-dataset-sampler/blob/master/examples/mnist.ipynb. The distribution looks as follows:
 
-[INCLUDE THE FIGURE FROM THE CODE]
+
 We sample an artificially imbalanced version of MNIST similar to https://www.ijcai.org/Proceedings/2019/0334.pdf. 
-The procedure is as follows. We select only the somewhat similar digits 5 and 6 (to make it harder for the model to distinguish them), and then we randomly sample each class with a proportionate split of 90/10% for both training, calibration and test set. 
+The procedure is as follows. For each class in our dataset, we subsample it to be between 0 and 100 percent of the original training and testdataset. Then, we select our calibration dataset similar to the previous experiment, i.e., random 90/10% split between training and calibration.
+
+We include a visualization of the classes distribution for the **original MNIST training dataset**
+
+![](/images/small_data_big_decisions/distribution_original.png)
 
 
-Our results are as follows:
+and the **imbalanced version**
+![](/images/small_data_big_decisions/distribution_imbalanced.png)
+
+
+After training our agents again for this imbalanced version, we obtain the following results:
+
 
 
 
