@@ -133,9 +133,14 @@ We are essentially replicating Figure 5 on page 5 of the paper. Our results look
 
 
 ## Imbalanced Dataset
-We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true. We generate an artificially imbalanced version of MNIST which has only two digits, 1 and 5, with a proportionate split of 90/10% of the training dataset.
+We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true. 
 
-We randomly sample our train and calibration split similar to previous experiment.
+We use an artificially imbalanced MNIST dataset version from https://github.com/ufoym/imbalanced-dataset-sampler/blob/master/examples/mnist.ipynb. The distribution looks as follows:
+
+[INCLUDE THE FIGURE FROM THE CODE]
+We sample an artificially imbalanced version of MNIST similar to https://www.ijcai.org/Proceedings/2019/0334.pdf. 
+The procedure is as follows. We select only the somewhat similar digits 5 and 6 (to make it harder for the model to distinguish them), and then we randomly sample each class with a proportionate split of 90/10% for both training, calibration and test set. 
+
 
 Our results are as follows:
 
