@@ -1,5 +1,4 @@
 # Model Selection with Large Neural Networks and Small Data
-# Is the Curse of Dimensionality a Myth?
 
 
 (IS the primary aim to validate the ranking hypothesis? Then experimental setting much simpler. And we are primarily interested in validating if we can do model/hyperparam tuning on small datasets!)
