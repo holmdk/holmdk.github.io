@@ -138,15 +138,18 @@ Having shown that temperature scaling is needed, we now turn to the primary expe
 
 ![](/images/small_data_big_decisions/relative_ranking.svg)
 
+Interestingly, we do not obtain the exact same "smooth" results as Bornschein (2020). This is most likely due to the fact, that we have not replicated their experiment completely, as they for example include many more different seeds.  Nevertheless, we can draw the following conclusions:
+
+- Interestingly, the relatively large ResNet-18 model does not overfit more than logistic regression at any point during training!
+- The relative ranking-hypothesis is largely confirmed
+- Beyond 25000 observations (roughly half of the MNIST train dataset), the significantly larger ResNet model is only marginally better than the relatively fast MLP model. 
 
 ### Imbalanced Dataset
 We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true. 
 
-We use an artificially imbalanced MNIST dataset version from https://github.com/ufoym/imbalanced-dataset-sampler/blob/master/examples/mnist.ipynb. The distribution looks as follows:
 
-
-We sample an artificially imbalanced version of MNIST similar to https://www.ijcai.org/Proceedings/2019/0334.pdf. 
-The procedure is as follows. For each class in our dataset, we subsample it to be between 0 and 100 percent of the original training and testdataset. Then, we select our calibration dataset similar to the previous experiment, i.e., random 90/10% split between training and calibration.
+We sample an artificially imbalanced version of MNIST similar to [Guo et al., 2017](https://www.ijcai.org/Proceedings/2019/0334.pdf). 
+The procedure is as follows. For each class in our dataset, we subsample it to be between 0 and 100 percent of the original training and test dataset. Then, we select our calibration dataset similar to the previous experiment, i.e., random 90/10% split between training and calibration. We use the following [github repo](https://github.com/ufoym/imbalanced-dataset-sampler/blob/master/examples/mnist.ipynb) for this sampling procedure.
 
 We include a visualization of the classes distribution for the **original MNIST training dataset**
 
@@ -157,11 +160,9 @@ and the **imbalanced version**
 ![](/images/small_data_big_decisions/distribution_imbalanced.png)
 
 
-While a plethora of different methods for overcoming the problem of imbalanced datasets exists, we want to investigate and isloate the effect of having an imbalanced dataset for the relative ranking hypothesis, i.e., can we still use model selection and hyperparameter tuning on smaller subsets of our original data in the imbalance data setting.
-If the reader wants to review some of these different methods for mitigating the effect of imbalance on training neural networks, we kindly refer to https://arxiv.org/pdf/1710.05381.pdf.
+While a plethora of different methods for overcoming the problem of imbalanced datasets exists (see the following [review paper](https://arxiv.org/pdf/1710.05381.pdf), we want to investigate and isolate the effects of having an imbalanced dataset for the relative ranking hypothesis, i.e., does the relative ranking-hypothesis still hold in the imbalanced data setting?
 
-
-After training our different models again for this imbalanced version, we obtain the following results:
+We run all our models again using this synthetically imbalanced MNIST dataset, and obtain the following results:
 
 
 
