@@ -9,49 +9,55 @@ Highly overparameterized neural networks can display strong generalization perfo
 
 This is certainly a bold claim, and I suspect many of you are shaking your heads right now.  
 
-Under the classical teachings of statistical learning, this contradicts the well-known bias-variance tradeoff, i.e., increase model complexity at the expense of generalization error. 
-This effect becomes even more pronounced for small datasets where the number of parameters, _p_, are larger than the number of observations, _n_. 
+Under the classical teachings of statistical learning, this contradicts the well-known bias-variance tradeoff. This theory defines a sweet-spot where, if you increase model complexity further, the generalization error will tend to increase (the typicaly u-shape).  
+
+You would think this effect becomes even more pronounced for small datasets where the number of parameters, _p_, are larger than the number of observations, _n_, but this is not neccessarily the case.
+
+In a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020), it was shown (among other things) that we can **train on a smaller subset** of our training data while maintaining generalizable results, even for large overparameterized models. If this is true, we can **reduce the computational overhead in model selection and hyperparmater tuning significantly**.  
 
 
-To address model selection in the small data domain using highly overparameterized neural networks, we review a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020) - henceforth named as "the paper".
-The paper is an empirical study of generalization error as a function of training set size, which is clearly interesting from both a theoretical and practical viewpoint.
-**Perhaps most useful** is the fact, that if we can **train on a smaller subset** of our training data while maintaining generalizable results, we can **reduce the computational overhead in model selection and hyperparmater tuning significantly**.  
+Think for a moment regarding the implications of the above statement. This could dramatically alter how we tune hyperparameters (for example in Kaggle competitions), as we can include significantly more models in our grid search (or the like). 
 
 
-And that is exactly the conclusion of the above paper and why we have chosen to review their method in this post.
+Is this really true? And how can we prove it?
+
+Let's get started.
 
 
 # 1. Review of classical theory on the bias-variance trade-off
-Before we get started, I will offer you two options. If you are tired of hearing about the bias-variance trade-off for the 100th time, please read the TLDR at the end of this Section 1 and then move on to Section 2. Otherwise, I will briefly introduce the bare minimum needed to understand the basics before moving on with the actual paper. 
-
+Before we get started, I will offer you two options. If you are tired of hearing about the bias-variance trade-off for the 100th time, please read the **TLDR** at the end of this Section 1 and then move on to Section 2. Otherwise, I will briefly introduce the bare minimum needed to understand the basics before moving on with the actual paper.
 
 The predictive error for all supervised learning algorithms can be broken into three parts, which are essential to understand the bias-variance tradeoff. These are;
 1) Bias
 2) Variance
 3) Irreducible error (or noise term)
 
-The **irreducible error** (sometimes called noise) is a term disconnected from the chosen model which can never be reduced. It is an aspect of the data arising due an imperfect framing of the problem, meaning we will never be able to capture the true relationship of the data no matter how good our model is.
+The **irreducible error** (sometimes called noise) is a term disconnected from the chosen model which can never be reduced. It is an aspect of the data arising due an imperfect framing of the problem, meaning we will never be able to capture the true relationship of the data - no matter how good our model is.
 
-The **bias** term is generally what people think of when they refer to model (predictive) errors. In short, it measures the difference between the "average" model prediction and the ground truth. Average might seem strange in this case as we typically only train one model, but think of it as the average of the range of predictions you get with the same model due to small pertubations or randomness in your data. **High bias** is a sign of poor model fit (underfitting), as it will have a large prediction error on both the training and test set.
+The **bias** term is generally what people think of when they refer to model (predictive) errors. In short, it measures the difference between the "average" model prediction and the ground truth. Average might seem strange in this case as we typically only train one model. Think of it this way. Due to small pertubations (randomness) in our data, we can get slightly different predictions even with the same model. By averaging the range of predictions we get due to these pertubations, we obtain the bias term. **High bias** is a sign of poor model fit (underfitting), as it will have a large prediction error on both the training and test set.
 
 Finally, the **variance** term refers to the variability of the model prediction for a given data point. It might sound similar, but the key difference lies in the "average" versus "data point". **High variance** implies high generalization error. For example, while a model might be relatively accurate on the training set, it achieves a considerably poor fit on the test set. This latter scenario (high variance, low bias) is typically the most likely when training overparameterized neural networks, i.e., what we refer to as **overfitting**.
 
-You might have seen the typical dartboard for visualizing the four different combinations of these two terms. While it is a good idea to have solid intuition regarding these four scenarios, the practical implication implies balancing the bias and variance. This can be achieved in numerous ways, but the most popular ones are tuning the hyperparameters on a validation set and/or selecting a more complex/simple model. The ultimate goal is to obtain low bias and low variance. Though, in real-world scenarios, this is typically easier said than done, as reducing bias generally leads to an increase in variance, vice versa. 
+The practical implication of these terms implies balancing the bias and variance (hence the name trade-off), typically controlled via model complexity. The ultimate goal is to obtain low bias and low variance. This is the typical U-shape test error curve you might have seen before. ![From https://www.digitalvidya.com/blog/bias-variance-tradeoff/](/images/small_data_big_decisions/bias-variance-tradeoff.png). 
 
-As a final note, the bias-variance trade-off is purely a theoretical quantity, meaning we cannot quantify it in practice. Instead, we rely on the optimizing the balance between training, validation and test error.
+Alright, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance** is bold, indeed.
 
 
-Alright, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance**. 
+## TLDR; high variance, low bias is a sign of overfitting. Overfitting happens when a model achieves high accuracy on the training set but low accuracy on the test set. This typically happens for overparameterized neural networks.
 
-## TLDR; high variance, low bias is a sign of overfitting. Overfitting happens when a model achieves high accuracy on the training set but low accuracy on the test set. This typically happens for overparameterized neural networks, especially on small datasets.
 
-# Small Data, Big Decisions: Model Selection in the Small-Data Regime Paper Review
+# 2. Modern Regime - Largers models are better!
 
-The long-held viewpoint regarding overfitting for overparamterized neural networks has been challenged recently by several researchers [insert citations].
-One author (Belkin et al., 2019) even claims that a third regime exists besides underfitting and overfitting, which is called the _interpolation threshold_.
-This regime  includes massively overparameterized models that you would expect to overfit the data excessively. Nevertheless, it has been shown to demonstrate gradual decline in generalization error following an initial peak. This scenario is termed _double-descent_, and it has also been empirically validated in Nakkiran et al., 2019 for modern neural network architectures on established and challenging datasets.
+In practice, we typically optimize the bias-variance trade-off using a validation set with (for example) early stopping. Interestingly, this **approach might be completely wrong**. Over the past few years, researchers have found that if you keep fitting increasingly flexible models, obtain what is termed _double descent_, i.e., generalization error starts decreasing once again after reaching an intermediary peak. See the following figure from OpenAI, which explains it perfectly;
 
-While there are many interesting hypothesis and empirical findings within this line of research, we will focus exclusively on the **relative ranking hypothesis**. Before we explain this hypothesis, we note that if proven true then **you** can potentially perform model selection and hyperparameter tuning on a small subset of your training dataset for your next experiment, and by doing so save computational resources and valuable training time. Due the this reason, we believe this hypothesis to be one of the most applicable and relevant for the majority of the people reading this post. 
+![From https://openai.com/blog/deep-double-descent/](/images/small_data_big_decisions/double_descent.svg).  
+
+These findings imply that larger models are generally better due to the double descent phenomena, which challenges the long-held viewpoint regarding overfitting for overparamterized neural networks. Besides the Deepmind researcher, it has also been empirically validated in Nakkiran et al., 2019 for modern neural network architectures on established and challenging datasets.
+
+
+# 3. Ranking-hypothesis
+Having established that large overparameterized neural networks can generalize well, we want to take it one step further. Enter the **relative ranking hypothesis**. Before we explain the hypothesis, we note that if proven true then **you** can potentially perform model selection and hyperparameter tuning on a small subset of your training dataset for your next experiment, and by doing so save computational resources and valuable training time. 
+
 
 As an additional experiment not included in the literature (as far as we know), we will investigate one setting that could potentially invalidate the relative ranking hypothesis, which is **imbalanced datasets**. 
 
