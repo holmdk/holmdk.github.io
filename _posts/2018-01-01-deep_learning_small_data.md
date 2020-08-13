@@ -1,10 +1,7 @@
 # Model Selection with Large Neural Networks and Small Data
-
-
-(IS the primary aim to validate the ranking hypothesis? Then experimental setting much simpler. And we are primarily interested in validating if we can do model/hyperparam tuning on small datasets!)
+# Large overparameterized neural networks generalize surprisingly well
 
 Highly overparameterized neural networks can display strong generalization performance, even on small datasets. 
-
 
 This is certainly a bold claim, and I suspect many of you are shaking your heads right now.  
 
@@ -15,10 +12,17 @@ You would think this effect becomes even more pronounced for small datasets wher
 In a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020), it was shown (among other things) that we can **train on a smaller subset** of our training data while maintaining generalizable results, even for large overparameterized models. If this is true, we can **reduce the computational overhead in model selection and hyperparmater tuning significantly**.  
 
 
-Think for a moment regarding the implications of the above statement. This could dramatically alter how we tune hyperparameters (for example in Kaggle competitions), as we can include significantly more models in our grid search (or the like). 
+Think for a moment regarding the implications of the above statement. This could dramatically alter how we select optimal models or tune hyperparameters (for example in Kaggle competitions), as we can include significantly more models in our grid search (or the like). 
 
 
 Is this really true? And how can we prove it?
+
+
+This post is going to be relatively long, so here we list the main takeaways if you read the entire post:
+- Model selection is possible using only a subset of your training data, thus saving computational resources (relative ranking-hypothesis)
+- Large overparameterized neural networks can generalize surprisingly well, even on small datasets
+- After reaching a minimum, the test cross-entropy tends to gradually increase over time while test accuracy improves (overconfidence). This can be avoided using temperature scaling. 
+
 
 Let's get started.
 
@@ -26,7 +30,7 @@ Let's get started.
 # 1. Review of classical theory on the bias-variance trade-off
 Before we get started, I will offer you two options. If you are tired of hearing about the bias-variance trade-off for the 100th time, please read the **TLDR** at the end of this Section 1 and then move on to Section 2. Otherwise, I will briefly introduce the bare minimum needed to understand the basics before moving on with the actual paper.
 
-The predictive error for all supervised learning algorithms can be broken into three parts, which are essential to understand the bias-variance tradeoff. These are;
+The predictive error for all supervised learning algorithms can be broken into three (theoretical) parts, which are essential to understand the bias-variance tradeoff. These are;
 1) Bias
 2) Variance
 3) Irreducible error (or noise term)
@@ -35,11 +39,11 @@ The **irreducible error** (sometimes called noise) is a term disconnected from t
 
 The **bias** term is generally what people think of when they refer to model (predictive) errors. In short, it measures the difference between the "average" model prediction and the ground truth. Average might seem strange in this case as we typically only train one model. Think of it this way. Due to small pertubations (randomness) in our data, we can get slightly different predictions even with the same model. By averaging the range of predictions we get due to these pertubations, we obtain the bias term. **High bias** is a sign of poor model fit (underfitting), as it will have a large prediction error on both the training and test set.
 
-Finally, the **variance** term refers to the variability of the model prediction for a given data point. It might sound similar, but the key difference lies in the "average" versus "data point". **High variance** implies high generalization error. For example, while a model might be relatively accurate on the training set, it achieves a considerably poor fit on the test set. This latter scenario (high variance, low bias) is typically the most likely when training overparameterized neural networks, i.e., what we refer to as **overfitting**.
+Finally, the **variance** term refers to the variability of the model prediction for a given data point. It might sound similar, but the key difference lies in the "average" versus "data point". **High variance** implies high generalization error. For example, while a model might be relatively accurate on the training set, it can achieve a considerably poor fit on the test set. This latter scenario (high variance, low bias) is typically the most likely when training overparameterized neural networks, i.e., what we refer to as **overfitting**.
 
 The practical implication of these terms implies balancing the bias and variance (hence the name trade-off), typically controlled via model complexity. The ultimate goal is to obtain low bias and low variance. This is the typical U-shape test error curve you might have seen before. ![From https://www.digitalvidya.com/blog/bias-variance-tradeoff/](/images/small_data_big_decisions/bias-variance-tradeoff.png). 
 
-Alright, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance** is bold, indeed.
+Alright, I will assume you know enough about the bias-variance trade-off for now to understand why the original claim that **overparameterized neural networks do not ncessarily imply high variance** is puzzling, indeed.
 
 
 ## TLDR; high variance, low bias is a sign of overfitting. Overfitting happens when a model achieves high accuracy on the training set but low accuracy on the test set. This typically happens for overparameterized neural networks.
@@ -47,34 +51,35 @@ Alright, I will assume you know enough about the bias-variance trade-off for now
 
 # 2. Modern Regime - Largers models are better!
 
-In practice, we typically optimize the bias-variance trade-off using a validation set with (for example) early stopping. Interestingly, this **approach might be completely wrong**. Over the past few years, researchers have found that if you keep fitting increasingly flexible models, obtain what is termed _double descent_, i.e., generalization error starts decreasing once again after reaching an intermediary peak. See the following figure from OpenAI, which explains it perfectly;
+In practice, we typically optimize the bias-variance trade-off using a validation set with (for example) early stopping. Interestingly, this **approach might be completely wrong**. Over the past few years, researchers have found that if you keep fitting increasingly flexible models, you obtain what is termed _double descent_, i.e., generalization error will start to decrease again after reaching an intermediary peak. This finding is empirically validated in Nakkiran et al., 2019 for modern neural network architectures on established and challenging datasets. See the following figure from OpenAI, which shows this scenario;
 
 ![From https://openai.com/blog/deep-double-descent/](/images/small_data_big_decisions/double_descent.svg).  
 
-These findings imply that larger models are generally better due to the double descent phenomena, which challenges the long-held viewpoint regarding overfitting for overparamterized neural networks. Besides the Deepmind researcher, it has also been empirically validated in Nakkiran et al., 2019 for modern neural network architectures on established and challenging datasets.
+These findings imply that larger models are generally better due to the double descent phenomena, which challenges the long-held viewpoint regarding overfitting for overparamterized neural networks.
 
 
-# 3. Ranking-hypothesis
-Having established that large overparameterized neural networks can generalize well, we want to take it one step further. Enter the **relative ranking hypothesis**. Before we explain the hypothesis, we note that if proven true then **you** can potentially perform model selection and hyperparameter tuning on a small subset of your training dataset for your next experiment, and by doing so save computational resources and valuable training time. 
+# 3. Relative Ranking-hypothesis
+Having established that large overparameterized neural networks can generalize well, we want to take it one step further. Enter the **relative ranking hypothesis**. Before we explain the hypothesis, we note that if proven true, then **you** can potentially perform model selection and hyperparameter tuning on a small subset of your training dataset for your next experiment, and by doing so save computational resources and valuable training time. 
 
 
-As an additional experiment not included in the literature (as far as we know), we will investigate one setting that could potentially invalidate the relative ranking hypothesis, which is **imbalanced datasets**. 
+We will briefly introduce the hypothesis followed by a few experiments to validate the claim
 
-Without further ado, lets try to break down the paper as efficiently as possible and include a few experiment.
+%As an additional experiment not included in the literature (as far as we know), we will investigate one setting that could potentially invalidate the relative ranking hypothesis, which is **imbalanced datasets**. 
+
+%Without further ado, lets try to break down the paper as efficiently as possible and include a few experiments.
 
 
-## Ranking-hypothesis
-The key hypothesis of the paper is; _"overparameterized model architectures seem to maintain their relative ranking in terms of generalization performance, when trained on arbitrarily small subsets of the training set"_. They call this observation the **relative ranking-hypothesis**. 
+## a) Theory
+One of the key hypothesis of the Bornschein (2020) paper is; _"overparameterized model architectures seem to maintain their relative ranking in terms of generalization performance, when trained on arbitrarily small subsets of the training set"_. They call this observation the **relative ranking-hypothesis**. 
 
-- Layman terms: Lets say we have 10 models to choose from, numbered from 1 to 10. We take a subset of our training data corresponding to 10% and find that model 6 is the best, followed by 4, then 3, and so on.. 
+- Layman terms: Lets say we have 10 models to choose from, numbered from 1 to 10. We train our models on a random 10% subset of the training data, and find that model 6 is the best, followed by 4, then 3, and so on.. 
 
-**The ranking hypothesis postulates, that as we gradually increase the subset percentage from 10% subset all the way up to 100%, we should obtain the exact same ordering of optimal models.** If this hypothesis is true, we can essentially perform model selection and hyperparamteter tuning on a small subset of the original data to the added benefit of much faster convergence. If this was not controversial enough, the authors even take it one step further as they found some experiments where training on small datasets led to more robust model selection (less variance), which certainly seem counterintuitive given that we would expect relatively more noise for smaller datasets.  
+**The ranking hypothesis postulates, that as we gradually increase the subset percentage from 10% subset all the way up to 100%, we should obtain the exact same ordering of optimal models.** If this hypothesis is true, we can essentially perform model selection on a small subset of the original data to the added benefit of much faster convergence. If this was not controversial enough, the authors even take it one step further as they found some experiments where training on small datasets led to more robust model selection (less variance), which certainly seem counterintuitive given that we would expect relatively more noise for smaller datasets.  
 
-## Temperature calibration
-
+## b) Temperature calibration
 One strange phenomenom of training neural network classifiers is that cross entropy error tends to increase even as classification error is reduced. This seems counterintuitive, but is simply due to models becoming overconfident in their predictions (Guo et al., 2017). We can use something called temperature scaling, which rectifies this overconfidence by calibrating the cross entropy estimates on a small held-out dataset. This yields more generalizeable and well-behaved results compared to classical cross-entropy, especially relevant for overparameterized neural networks. As a rough analogy, you can think of this as providing less "false negatives" regarding the number of overfitting cases.
 
-While the authors do not provide explicit details on the exact softmax temperature calibration procedure, we use the following procedure;
+While Bornschein (2020) do not provide explicit details on the exact softmax temperature calibration procedure used in their paper, we use the following procedure for our experiments;
 
 - We define a held-out calibration dataset, C, equivalent to 10% of the training data.  
 - We initialize temperature scalar to be xx.xx
@@ -85,17 +90,15 @@ While the authors do not provide explicit details on the exact softmax temperatu
 3) Use the updated temperature scalar to calibrate the regular cross entropy during gradient descent   
 - After training for 50 epochs, we calculate the test error
 
-That covers all the details of the paper. Lets turn to the experimental setting.
+Let us now turn to the experimental setting.
 
-# Experiments
-
-
-We start by briefly replicating the MNIST experiment and then turn to the imbalanced dataset case..
-
-## MNIST 
+## c) Experiments
 
 
-We start by replicating the paper's study on MNIST, before moving on with the imbalanced dataset experiment. This is not meant to disprove any of the claims in the paper, but  simply to ensure we have replicated their experimental setup succesfully.
+We will conduct two experiments in this post. One for validating the relative ranking-hypothesis on the MNIST dataset, and one for evaluating how our conclusions change if we synthetically make MNIST imbalanced. This experiment is not included in the Bornschein (2020) paper, and could potentially invalidate the relative ranking-hypothesis for imbalanced dadtasets.
+
+### MNIST 
+We start by replicating the Bornschein (2020) study on MNIST, before moving on with the imbalanced dataset experiment. This is not meant to disprove any of the claims in the paper, but simply to ensure we have replicated their experimental setup as closely as possible.
 
 - Split of 90%/10% for the training and calibration sets, respectively
 - Random sampling (as balanced subset sampling did not provide any added benefit according to the paper)
@@ -111,7 +114,7 @@ We start by replicating the paper's study on MNIST, before moving on with the im
 The authors also mention experimenting with replacing ReLU with tanh, batch-norm, layer-norm etc., but it is unclear if these tests were included in their final results. Thus, we only consider the experiment using the above settings. 
 
 
-### Experiment 1: How does temperature scaling during gradient descent affect generalization?
+#### Experiment 1: How does temperature scaling during gradient descent affect generalization?
 As an initial experiment, we want to validate why temperature scaling is needed.
 For this, we train an MLP using ReLU and 3 hidden layers of 2048 units each, respectively. We do not include dropout and we train for 50 epochs.
 
@@ -131,13 +134,12 @@ To remedy this effect, we can incorporate temperature scaling which a) ensures p
 
 
 ### Relative Ranking Hypothesis 
-Having shown that temperature scaling is needed, we now turn to the primary experiment - i.e., how does test cross-entropy vary as a function of the size of our training dataset.
+Having shown that temperature scaling is needed, we now turn to the primary experiment - i.e., how does test cross-entropy vary as a function of the size of our training dataset. Our results look as follows:
 
-We are essentially replicating Figure 5 on page 5 of the paper. Our results look as follows:
+![](/images/small_data_big_decisions/relative_ranking.svg)
 
 
-
-## Imbalanced Dataset
+### Imbalanced Dataset
 We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true. 
 
 We use an artificially imbalanced MNIST dataset version from https://github.com/ufoym/imbalanced-dataset-sampler/blob/master/examples/mnist.ipynb. The distribution looks as follows:
