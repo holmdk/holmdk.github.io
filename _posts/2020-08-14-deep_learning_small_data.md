@@ -141,7 +141,7 @@ To remedy this effect, we can incorporate temperature scaling which **a)** ensur
 ## Balanced Dataset
 Having shown that temperature scaling is needed, we now turn to the primary experiment - i.e., how does test cross-entropy vary as a function of the size of our training dataset. Our results look as follows:
 
-![](/images/small_data_big_decisions/relative_ranking.svg)
+![](/images/small_data_big_decisions/relative_ranking_v.svg)
 
 Interestingly, we do not obtain the exact same "smooth" results as Bornschein (2020). This is most likely due to the fact, that we have not replicated their experiment completely, as they for example include many more different seeds.  Nevertheless, we can draw the following conclusions:
 
@@ -170,7 +170,7 @@ While a plethora of different methods for overcoming the problem of imbalanced d
 
 We run all our models again using this synthetically imbalanced MNIST dataset, and obtain the following results:
 
-![](/images/small_data_big_decisions/imbalanced_relative_ranking.svg)
+![](/images/small_data_big_decisions/imbalanced_relative_ranking_v.svg)
 
 
 _So has the conclusion changed?_
