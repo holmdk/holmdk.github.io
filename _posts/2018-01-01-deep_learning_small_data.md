@@ -196,7 +196,11 @@ Thank you for reading!
 
 # 5. References
 
-[1] J. Bornschein, F. Visin, and S. Osindero, Small Data, Big Decisions: Model Selection in the Small-Data Regime (2020), in International Conference on Machine Learning (ICML).
-[2] P. Nakkiran, G. Kaplun, Y. Yang, B. T. Barak and I. Sutskever, Deep double descent: Where bigger models and more data hurt (2019), arXiv preprint arXiv:1912.02292.
-[3] C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger, Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017). On calibration of modern neural networks (2017), arXiv preprint arXiv:1706.04599.
-[4] T. Guo, X. Zhu, Y. Wang, and F. Chen, Discriminative Sample Generation for Deep Imbalanced Learning (2019), in International Joint Conferences on Artificial Intelligence Organization (IJCAI) (pp. 2406-2412).
+[1] J. Bornschein, F. Visin, and S. Osindero, Small Data, Big Decisions: Model Selection in the Small-Data Regime (2020), in International Conference on Machine Learning (ICML).  
+
+[2] P. Nakkiran, G. Kaplun, Y. Yang, B. T. Barak and I. Sutskever, Deep double descent: Where bigger models and more data hurt (2019), arXiv preprint arXiv:1912.02292.  
+
+[3] C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger, Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017). On calibration of modern neural networks (2017), arXiv preprint arXiv:1706.04599.  
+
+[4] T. Guo, X. Zhu, Y. Wang, and F. Chen, Discriminative Sample Generation for Deep Imbalanced Learning (2019), in International Joint Conferences on Artificial Intelligence Organization (IJCAI) (pp. 2406-2412).  
+
