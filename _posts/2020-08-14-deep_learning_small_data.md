@@ -1,6 +1,5 @@
 
 # Model Selection with Large Neural Networks and Small Data
-# Large overparameterized neural networks generalize surprisingly well
 
 Highly overparameterized neural networks can display strong generalization performance, even on small datasets. 
 
