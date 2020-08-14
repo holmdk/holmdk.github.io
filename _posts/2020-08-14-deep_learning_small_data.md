@@ -178,15 +178,15 @@ _So has the conclusion changed?_
 **Not really**! 
 
 This is quite an optimistic result, as we are now more confident, that the relative ranking-hypothesis is mostly true in the case of imbalanced datasets.
-We believe this could also be the reason behind the quote from the Bornschein (2020) paper regarding the sampling strategy; "We experimented with balanced subset sampling, i.e. ensuring that all subsets always contain an equal number of examples per class. But we did not observe any reliable improvements from doing so and therefore reverted to a simple i.i.d sampling strategy."
+We believe this could also be the reason behind the quote from the Bornschein (2020) paper regarding the sampling strategy; _"We experimented with balanced subset sampling, i.e. ensuring that all subsets always contain an equal number of examples per class. But we did not observe any reliable improvements from doing so and therefore reverted to a simple i.i.d sampling strategy."_
 
-One noteworthy difference between the balanced and imbalanced results can be seen in the MLP and ResNet plot. They are arguably more "jumpy" for the imbalanced version for data sizes up to 250, which makes sense given that there might be classes available in the test set not seen during training.
+The primary difference between the balanced and imbalanced results is the more "jumpy" results, which makes sense given that there might be classes available in the test set not seen during training for the chosen models.
 
 
 
 # 4. Summary
 
-To sum up the findings:
+To sum up our findings:
 - Due to the _relative ranking-hypothesis_, we can perform **model selection** using only a **subset of our training data** for both balanced and imbalanced datasets, thus **saving computational resources** 
 - Large **overparameterized neural networks** can **generalize surprisingly well**, even on small datasets (_double descent_)
 - We can **avoid overconfidence** by applying **temperature scaling**
@@ -194,7 +194,7 @@ To sum up the findings:
 
 I hope that you might be able to apply these findings in your next machine learning experiments, and remember, larger is (almost) always better.
 
-Thank you for reading!
+**Thank you for reading!**
 
 
 # 5. References
