@@ -92,12 +92,12 @@ While Bornschein (2020) do not provide explicit details on the exact softmax tem
 
 Let us now turn to the experimental setting.
 
-## c) Experiments
+# 3. Experiments
 
 
 We will conduct two experiments in this post. One for validating the relative ranking-hypothesis on the MNIST dataset, and one for evaluating how our conclusions change if we synthetically make MNIST imbalanced. This experiment is not included in the Bornschein (2020) paper, and could potentially invalidate the relative ranking-hypothesis for imbalanced dadtasets.
 
-### MNIST 
+## MNIST 
 We start by replicating the Bornschein (2020) study on MNIST, before moving on with the imbalanced dataset experiment. This is not meant to disprove any of the claims in the paper, but simply to ensure we have replicated their experimental setup as closely as possible.
 
 - Split of 90%/10% for the training and calibration sets, respectively
@@ -114,7 +114,7 @@ We start by replicating the Bornschein (2020) study on MNIST, before moving on w
 The authors also mention experimenting with replacing ReLU with tanh, batch-norm, layer-norm etc., but it is unclear if these tests were included in their final results. Thus, we only consider the experiment using the above settings. 
 
 
-#### Experiment 1: How does temperature scaling during gradient descent affect generalization?
+### Experiment 1: How does temperature scaling during gradient descent affect generalization?
 As an initial experiment, we want to validate why temperature scaling is needed.
 For this, we train an MLP using ReLU and 3 hidden layers of 2048 units each, respectively. We do not include dropout and we train for 50 epochs.
 
@@ -133,7 +133,7 @@ Clearly, the test entropy does decline initially and then gradually increase ove
 To remedy this effect, we can incorporate temperature scaling which a) ensures probabilistic forecasts are more stable and reliable out-of-sample and b) improves generalization by scaling training cross entropy during gradient descent. This was shown in Guo et al., 2017.
 
 
-### Relative Ranking Hypothesis 
+## Balanced Dataset
 Having shown that temperature scaling is needed, we now turn to the primary experiment - i.e., how does test cross-entropy vary as a function of the size of our training dataset. Our results look as follows:
 
 ![](/images/small_data_big_decisions/relative_ranking.svg)
@@ -144,7 +144,7 @@ Interestingly, we do not obtain the exact same "smooth" results as Bornschein (2
 - The relative ranking-hypothesis is largely confirmed
 - Beyond 25000 observations (roughly half of the MNIST train dataset), the significantly larger ResNet model is only marginally better than the relatively fast MLP model. 
 
-### Imbalanced Dataset
+## Imbalanced Dataset
 We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true. 
 
 We sample an artificially imbalanced version of MNIST similar to [Guo et al., 2017](https://www.ijcai.org/Proceedings/2019/0334.pdf). 
@@ -166,14 +166,13 @@ We run all our models again using this synthetically imbalanced MNIST dataset, a
 ![](/images/small_data_big_decisions/imbalanced_relative_ranking.svg)
 
 
+So has the conclusion changed?
+
+**Not really**! This is quite an optimistic result, as we are more confident that the relative ranking-hypothesis will also hold true in the case of imbalance datasets.
+We believe this could also be the reason behind the quote from the Bornschein (2020) paper regarding the sampling strategy; "We experimented with balanced subset sampling, i.e. ensuring that all subsets always contain an equal number of examples per class. But we did not observe any reliable improvements from doing so and therefore reverted to a simple i.i.d sampling strategy."
+
+One noteworthy difference between the balanced and imbalanced version can be seen in the MLP and ResNet plot. They are arguably more "jumpy" for the imbalanced version for data sizes up to 250, which makes sense given that there might be classes available in the test set not seen during training.
 
 
 
-
-
-# They also derive a term called the "Minimum Description Lengths" (MDL) for common datasets and modern neural network architectures. 
-# MDL is inspired by the well-known Occam's razor principle, in which the model with the most simple
-
-# - **Hypothesis 2:** If we turn on temperature scaling, we expect to see lower and more stable test cross entropy error during training (as demonstrated in Guo et al., 2017)
-
-**Here are the results from our Hypothesis 2:**
+# 4. Summary
