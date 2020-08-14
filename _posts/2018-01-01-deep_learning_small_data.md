@@ -147,6 +147,7 @@ Interestingly, we do not obtain the exact same "smooth" results as Bornschein (2
 ### Imbalanced Dataset
 We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis does not hold true. 
 
+![](/images/small_data_big_decisions/imbalanced_relative_ranking.svg)
 
 We sample an artificially imbalanced version of MNIST similar to [Guo et al., 2017](https://www.ijcai.org/Proceedings/2019/0334.pdf). 
 The procedure is as follows. For each class in our dataset, we subsample it to be between 0 and 100 percent of the original training and test dataset. Then, we select our calibration dataset similar to the previous experiment, i.e., random 90/10% split between training and calibration. We use the following [github repo](https://github.com/ufoym/imbalanced-dataset-sampler/blob/master/examples/mnist.ipynb) for this sampling procedure.
