@@ -5,23 +5,22 @@ Highly overparameterized neural networks can display strong generalization perfo
 
 This is certainly a bold claim, and I suspect many of you are shaking your heads right now.  
 
-Under the classical teachings of statistical learning, this contradicts the well-known bias-variance tradeoff. This theory defines a sweet-spot where, if you increase model complexity further, the generalization error will tend to increase (the typicaly u-shape).  
+Under the classical teachings of statistical learning, this contradicts the well-known bias-variance tradeoff. This theory defines a sweet-spot where, if you increase model complexity further, generalization error tends to increase (the typicaly u-shape).  
 
-You would think this effect becomes even more pronounced for small datasets where the number of parameters, _p_, are larger than the number of observations, _n_, but this is not neccessarily the case.
+You would think this effect becomes more pronounced for **small datasets** where the number of parameters, _p_, are larger than the number of observations, _n_, but **this is not neccessarily the case.**
 
-In a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020), it was shown (among other things) that we can **train on a smaller subset** of our training data while maintaining generalizable results, even for large overparameterized models. If this is true, we can **reduce the computational overhead in model selection and hyperparmater tuning significantly**.  
-
-
-Think for a moment regarding the implications of the above statement. This could dramatically alter how we select optimal models or tune hyperparameters (for example in Kaggle competitions), as we can include significantly more models in our grid search (or the like). 
+In a recent ICML 2020 paper by [Deepmind](https://proceedings.icml.cc/static/paper_files/icml/2020/6899-Paper.pdf) (Bornschein, 2020), it was shown that one can **train on a smaller subset** of the training data while maintaining generalizable results, even for large overparameterized models. If this is true, we can **reduce the computational overhead in model selection and hyperparmater tuning significantly**.  
 
 
-Is this really true? And how can we prove it?
+Think for a moment regarding the implications of this. This could dramatically alter how we select optimal models or tune hyperparameters (for example in Kaggle competitions), since we can include significantly more models in our grid search (or the like). 
 
 
-This post is going to be relatively long, so here we list the main takeaways if you read the entire post:
-- Model selection is possible using only a subset of your training data, thus saving computational resources (relative ranking-hypothesis)
-- Large overparameterized neural networks can generalize surprisingly well, even on small datasets
-- After reaching a minimum, the test cross-entropy tends to gradually increase over time while test accuracy improves (overconfidence). This can be avoided using temperature scaling. 
+**Is this too good to be true? And how can we prove it?**
+
+Here are the main takeaways before we get started:
+- **Model selection** is possible using only a **subset of your training data**, thus **saving computational resources** (_relative ranking-hypothesis_)
+- Large **overparameterized neural networks** can **generalize surprisingly well** (_double descent_)
+- After reaching a minimum, **test cross-entropy tends to gradually increase over time while test accuracy improves** (_overconfidence_). This can be avoided using **temperature scaling**. 
 
 
 Let's get started.
