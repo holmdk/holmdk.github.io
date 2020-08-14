@@ -73,9 +73,9 @@ One of the key hypothesis of Bornschein (2020) is; _"overparameterized model arc
 
 They call this observation the **relative ranking-hypothesis**. 
 
-In layman terms; Let's say we have 10 models to choose from, numbered from 1 to 10. We train our models on a 10% subset of the training data, and find that model 6 is the best, followed by 4, then 3, and so on.. 
+In layman terms; let's say we have 10 models to choose from, numbered from 1 to 10. We train our models on a 10% subset of the training data, and find that model 6 is the best, followed by 4, then 3, and so on.. 
 
-**The ranking hypothesis postulates, that as we gradually increase the subset percentage from 10% subset all the way up to 100%, we should obtain the exact same ordering of optimal models.** 
+**The ranking hypothesis postulates, that as we gradually increase the subset percentage from 10% all the way up to 100%, we should obtain the exact same ordering of optimal models.** 
 
 If this hypothesis is true, we can essentially perform model selection on a small subset of the original data to the added benefit of much faster convergence. If this was not controversial enough, the authors even take it one step further as they found some experiments where training on small datasets led to more robust model selection (less variance), which certainly seem counterintuitive given that we would expect relatively more noise for smaller datasets.  
 
@@ -89,7 +89,7 @@ While Bornschein (2020) do not provide explicit details on the exact softmax tem
 
 - For each epoch;
 1) Calculate cross-entropy loss on our calibration set C 
-2) Optimize the temperature scalar using gradient descent on the calibration set [see this Github repo by Guo et al. (2017)](https://github.com/gpleiss/temperature_scaling) 
+2) Optimize the temperature scalar using gradient descent on the calibration set ([see this Github repo by Guo et al. (2017)](https://github.com/gpleiss/temperature_scaling)) 
 3) Use the updated temperature scalar to calibrate the regular cross entropy during gradient descent   
 
 - After training for 50 epochs, we calculate the calibrated test error, which should no longer show signs of overconfidence.
@@ -99,7 +99,7 @@ Let us now turn to the experimental setting.
 # 3. Experiments
 
 
-We will conduct two experiments in this post. One for validating the relative ranking-hypothesis on the MNIST dataset, and one for evaluating how our conclusions change if we **synthetically make MNIST imbalanced**. This experiment is **not included** in the Bornschein (2020) paper, and could potentially invalidate the relative ranking-hypothesis for imbalanced datasets.
+We will conduct two experiments in this post. One for validating the relative ranking-hypothesis on the MNIST dataset, and one for evaluating how our conclusions change if we **synthetically make MNIST imbalanced**. This latter experiment is **not included** in the Bornschein (2020) paper, and could potentially invalidate the relative ranking-hypothesis for imbalanced datasets.
 
 ## MNIST 
 We start by replicating the Bornschein (2020) study on MNIST, before moving on with the imbalanced dataset experiment. This is not meant to disprove any of the claims in the paper, but simply to ensure we have replicated their experimental setup as closely as possible (with some modifications).
@@ -122,11 +122,11 @@ The authors also mention experimenting with replacing ReLU with tanh, batch-norm
 As an initial experiment, we want to validate why temperature scaling is needed.
 For this, we train an MLP using ReLU and 3 hidden layers of 2048 units each, respectively. We do not include dropout and we train for 50 epochs.
 
-**Our hypothesis is:**: The test cross entropy should gradually increase while test accuracy decreases over time (motivation for temperature scaling in the first place, i.e., model overconfidence). 
+**Our hypothesis is:** The test cross entropy should gradually increase while test accuracy decreases over time (motivation for temperature scaling in the first place, i.e., model overconfidence). 
 
 **Here are the results from this initial experiment:**
 ![](/images/small_data_big_decisions/acc_vs_test_entropy_mean_no_scaling.png)
-Clearly, the test entropy does decline initially and then gradually increase over time while test accuracy keeps improving. This is evidence in favor of hypothesis 1. Figure 3 in Guo et al. (2017) demonstrates the exact same effect on CIFAR-100. 
+Clearly, the test entropy does decline initially and then gradually increase over time while test accuracy keeps improving. This is evidence in favor of hypothesis 1. Figure 3 in Guo et al. (2017) demonstrates the exact same effect on CIFAR-100.  
 *Note:* We have smoothed the results a bit (5-window rolling mean) to make the effect more visible. 
 
 
@@ -145,13 +145,13 @@ Having shown that temperature scaling is needed, we now turn to the primary expe
 Interestingly, we do not obtain the exact same "smooth" results as Bornschein (2020). This is most likely due to the fact, that we have not replicated their experiment completely, as they for example include many more different seeds.  Nevertheless, we can draw the following conclusions:
 
 - Interestingly, the relatively large ResNet-18 model does not overfit more than logistic regression at any point during training!
-- The relative ranking-hypothesis is largely confirmed
+- The relative ranking-hypothesis is confirmed 
 - Beyond 25000 observations (roughly half of the MNIST train dataset), the significantly larger ResNet model is only marginally better than the relatively faster MLP model. 
 
 ## Imbalanced Dataset
 We will now conduct an experiment for the case of imbalanced datasets, which is not included in the actual paper, as it could be a setting where the tested hypothesis is invalid. 
 
-We sample an artificially imbalanced version of MNIST similar to Guo et al. (20197)(https://arxiv.org/pdf/1706.04599.pdf). 
+We sample an artificially imbalanced version of MNIST similar to [Guo et al. (2019)](https://arxiv.org/pdf/1706.04599.pdf). 
 The procedure is as follows. For each class in our dataset, we subsample between 0 and 100 percent of the original training and test dataset. We use the following [github repo](https://github.com/ufoym/imbalanced-dataset-sampler/blob/master/examples/mnist.ipynb) for this sampling procedure. Then, we select our calibration dataset similar to the previous experiment, i.e., random 90/10% split between training and calibration. 
 
 We include a visualization of the classes distribution for the **original MNIST training dataset**
@@ -176,7 +176,7 @@ _So has the conclusion changed?_
 
 **Not really**! 
 
-This is quite an optimistic result, as we are more confident, that the relative ranking-hypothesis also holds true in the case of imbalanced datasets.
+This is quite an optimistic result, as we are now more confident, that the relative ranking-hypothesis is mostly true in the case of imbalanced datasets.
 We believe this could also be the reason behind the quote from the Bornschein (2020) paper regarding the sampling strategy; "We experimented with balanced subset sampling, i.e. ensuring that all subsets always contain an equal number of examples per class. But we did not observe any reliable improvements from doing so and therefore reverted to a simple i.i.d sampling strategy."
 
 One noteworthy difference between the balanced and imbalanced results can be seen in the MLP and ResNet plot. They are arguably more "jumpy" for the imbalanced version for data sizes up to 250, which makes sense given that there might be classes available in the test set not seen during training.
