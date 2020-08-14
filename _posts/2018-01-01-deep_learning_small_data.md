@@ -185,14 +185,16 @@ One noteworthy difference between the balanced and imbalanced results can be see
 
 # 4. Summary
 
-To sum up, we refer to our listed main takeaways from the start, which should (hopefully) be clear to you now!
-- **Model selection** is possible using only a **subset of your training data**, thus **saving computational resources** (_relative ranking-hypothesis_)
-- Large **overparameterized neural networks** can **generalize surprisingly well** (_double descent_)
-- After reaching a minimum, **test cross-entropy tends to gradually increase over time while test accuracy improves** (_overconfidence_). This can be avoided using **temperature scaling**. 
+To sum up the findings:
+- Due to the _relative ranking-hypothesis_, we can perform **model selection** using only a **subset of our training data** for both balanced and imbalanced datasets, thus **saving computational resources** 
+- Large **overparameterized neural networks** can **generalize surprisingly well**, even on small datasets (_double descent_)
+- We can **avoid overconfidence** by applying **temperature scaling**
 
-We hope that you might be able to apply these findings in your next machine learning experiments, and remember, larger is (almost) always better.
+
+I hope that you might be able to apply these findings in your next machine learning experiments, and remember, larger is (almost) always better.
 
 Thank you for reading!
+
 
 # 5. References
 
